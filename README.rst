@@ -33,7 +33,7 @@ In your markdown text you can define the block:
   ```
 
 Parameters can be set for individual figures.
-`Availabale parameters  <http://aafigure.readthedocs.io/en/latest/sphinxext.html#options/>`_
+`Availabale parameters  <http://aafigure.readthedocs.io/en/latest/sphinxext.html#options>`_
 
 .. code-block::
 
