@@ -32,6 +32,19 @@ In your markdown text you can define the block:
         +-----+   V
   ```
 
+Parameters can be set for individual figures.
+`Availabale parameters  <http://aafigure.readthedocs.io/en/latest/sphinxext.html#options/>`_
+
+.. code-block::
+
+  ```aafigure {"foreground": "#ff0000"}
+        +-----+   ^
+        |     |   |
+    --->+     +---o--->
+        |     |   |
+        +-----+   V
+  ```
+
 
 Testing
 -------

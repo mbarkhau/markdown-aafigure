@@ -20,6 +20,16 @@ BASIC_FIG_TXT = r"""
 ```
 """.strip()
 
+PARAM_FIG_TXT = r"""
+```aafigure {"foreground": "#ff0000"}
+        +-----+   ^
+        |     |   |
+    --->+     +---o--->
+        |     |   |
+        +-----+   V
+```
+""".strip()
+
 
 def test_regexp():
     assert ext.AafigureProcessor.RE.match(BASIC_FIG_TXT)
@@ -44,3 +54,11 @@ def test_basic_aafigure():
 
     result = unescape(result).replace('&quot;', '\"')
     assert result == expected
+
+
+def test_param_aafigure():
+    fig_data = ext.draw_aafigure(PARAM_FIG_TXT, output_fmt='svg')
+
+    assert b"<svg" in fig_data
+    assert b"</svg>" in fig_data
+    assert b'stroke="#ff0000"' in fig_data

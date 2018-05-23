@@ -11,6 +11,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import re
+import json
 import base64
 
 from markdown.extensions import Extension
@@ -29,13 +30,29 @@ def draw_aafigure(content, filename=None, output_fmt='svg'):
     if content.endswith("```"):
         content = content[:-len("```")]
 
-    visitor, output = aafigure.render(content, options={'format': output_fmt})
+    options = {'format': output_fmt}
+    header, rest = content.split("\n", 1)
+    if "{" in header and "}" in header:
+        options.update(json.loads(header))
+        content = rest
+
+    for option_name in list(options.keys()):
+        if option_name not in aafigure.aafigure.DEFAULT_OPTIONS:
+            raise ValueError("Invalid Option: {}".format(option_name))
+
+        option_val = options[option_name]
+        default_val = aafigure.aafigure.DEFAULT_OPTIONS[option_name]
+        default_type = type(default_val)
+        if not isinstance(option_val, default_type):
+            options[option_name] = default_type(option_val)
+
+    visitor, output = aafigure.render(content, options=options)
     return output.getvalue()
 
 
 class AafigureProcessor(BlockProcessor):
 
-    RE = re.compile(r"^```aafigure\s+", re.MULTILINE)
+    RE = re.compile(r"^```aafigure")
 
     def __init__(self, parser, extension):
         super(AafigureProcessor, self).__init__(parser)
@@ -78,12 +95,13 @@ class AafigureExtension(Extension):
 
     def __init__(self, **kwargs):
         self.config = {
-            'format'        : ['svg', 'Format to use (svg/png)'],
+            'format': ['svg', 'Format to use (svg/png)'],
         }
-        # TODO (mb 2018-05-23): Global defaults
-        #   overridable for each diagram
+        # TODO (mb 2018-05-23): We could have global defaults
+        #   instead of an override for each fig. Don't know
+        #   how to get the help text automatically though.
         # for k, v in aafigure.aafigure.DEFAULT_OPTIONS.items():
-        #     self.config[k] = [v, ]
+        #     self.config[k] = [v, ??]
         super(AafigureExtension, self).__init__(**kwargs)
 
     def extendMarkdown(self, md, md_globals):
