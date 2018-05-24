@@ -38,7 +38,7 @@ setuptools.setup(
         'aafigure',
     ],
     classifiers=[
-        "Development Status :: 3 - Beta",
+        "Development Status :: 4 - Beta",
         "Environment :: Console",
         "Environment :: Other Environment",
         "Intended Audience :: Developers",
