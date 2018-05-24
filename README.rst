@@ -52,7 +52,7 @@ Testing
 
 .. code-block:: bash
 
-    $ pip install flake8 pytest pytest-coverage
+    $ pip install flake8 pytest pytest-coverage rs2html5
     $ flake8 src/
     $ python setup.py --long-description | rst2html5 --strict > README.html
     $ python setup.py --quiet install --force; pytest -v --cov=markdown_aafigure --cov-report term-missing tests/
@@ -63,11 +63,7 @@ Publish
 
 .. code-block:: bash
 
-    $ pip install rst2html5
-    $ pip install twine
-    $ rm dist/*
-    $ python setup.py sdist bdist_wheel
-    $ twine upload dist/*
+    $ rm dist/*; python setup.py sdist bdist_wheel upload
 
 
 MkDocs Integration
