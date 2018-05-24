@@ -10,7 +10,8 @@ import setuptools
 
 
 def path(filename):
-    return os.path.join(os.path.dirname(__file__), filename)
+    dirpath = os.path.abspath(os.path.dirname(__file__))
+    return os.path.join(dirpath, filename)
 
 
 def read(filename):
@@ -20,13 +21,13 @@ def read(filename):
 
 setuptools.setup(
     name='markdown-aafigure',
-    version='0.1.3',
+    version='0.1.4',
     description='aafigure extension for Python Markdown',
     long_description=read("README.rst"),
     author='Manuel Barkhau',
     author_email='mbarkhau@gmail.com',
     packages=setuptools.find_packages(path("src")),
-    package_dir={'': str(path("src"))},
+    package_dir={'': path("src")},
     zip_safe=True,
     url='https://github.com/mbarkhau/markdown-aafigure',
     license='MIT',
@@ -39,7 +40,7 @@ setuptools.setup(
         "Environment :: Console",
         "Environment :: Other Environment",
         "Intended Audience :: Developers",
-        "License :: Other/Proprietary License",
+        "License :: OSI Approved :: MIT License",
         "Operating System :: Unix",
         "Operating System :: POSIX",
         "Operating System :: MacOS :: MacOS X",
