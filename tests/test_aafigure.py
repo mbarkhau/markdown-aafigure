@@ -20,6 +20,7 @@ BASIC_FIG_TXT = r"""
 ```
 """.strip()
 
+
 PARAM_FIG_TXT = r"""
 ```aafigure {"foreground": "#ff0000"}
         +-----+   ^
@@ -29,6 +30,31 @@ PARAM_FIG_TXT = r"""
         +-----+   V
 ```
 """.strip()
+
+
+EXTENDED_FIG_TXT = r"""
+# Heading
+
+prelude
+
+```aafigure
+        +-----+   ^
+        |     |   |
+    --->+     +---o--->
+        |     |   |
+        +-----+   V
+```
+
+postscript
+"""
+
+
+EXTENDED_FIG_HTML_TEMPLATE = r"""
+<h1>Heading</h1>
+<p>prelude</p><p>
+<img src="data:image/svg+xml;utf8,{}" /></p>
+<p>postscript</p>
+"""
 
 
 def test_regexp():
@@ -62,3 +88,32 @@ def test_param_aafigure():
     assert b"<svg" in fig_data
     assert b"</svg>" in fig_data
     assert b'stroke="#ff0000"' in fig_data
+
+    result = markdown(PARAM_FIG_TXT, extensions=['markdown_aafigure'])
+    result = unescape(result).replace('&quot;', '\"')
+
+    expected = '<p><img src="data:image/svg+xml;utf8,{}" /></p>'.format(
+        fig_data.decode('utf-8')
+    )
+    assert result == expected
+
+
+def test_extended_aafigure():
+    fig_data = ext.draw_aafigure(BASIC_FIG_TXT, output_fmt='svg')
+
+    assert b"<svg" in fig_data
+    assert b"</svg>" in fig_data
+
+    result = markdown(EXTENDED_FIG_TXT, extensions=['markdown_aafigure'])
+    result = unescape(result).replace('&quot;', '\"')
+
+    expected = EXTENDED_FIG_HTML_TEMPLATE.format(fig_data.decode('utf-8'))
+    expected = expected.replace("\n", "")
+    result = result.replace("\n", "")
+
+    with open("expected.html", mode='wb') as fh:
+        fh.write(expected.encode('utf-8'))
+    with open("result.html", mode='wb') as fh:
+        fh.write(result.encode('utf-8'))
+
+    assert result == expected
