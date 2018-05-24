@@ -11,10 +11,10 @@ extension for `Python Markdown <https://python-markdown.github.io/>`_
 Install
 -------
 
-.. code-block::
+.. code-block:: bash
 
-  $ pip install markdown-aafigure
-  $ pip install Pillow    # only for any format other than svg
+    $ pip install markdown-aafigure
+    $ pip install Pillow    # only for any format other than svg
 
 
 Use
@@ -22,50 +22,52 @@ Use
 
 In your markdown text you can define the block:
 
-.. code-block::
+.. code-block:: text
 
-  ```aafigure
-        +-----+   ^
-        |     |   |
-    --->+     +---o--->
-        |     |   |
-        +-----+   V
-  ```
+    ```aafigure
+          +-----+   ^
+          |     |   |
+      --->+     +---o--->
+          |     |   |
+          +-----+   V
+    ```
 
 Parameters can be set for individual figures.
 `Availabale parameters  <https://aafigure.readthedocs.io/en/latest/sphinxext.html#options>`_
 
-.. code-block::
+.. code-block:: text
 
-  ```aafigure {"foreground": "#ff0000"}
-        +-----+   ^
-        |     |   |
-    --->+     +---o--->
-        |     |   |
-        +-----+   V
-  ```
+    ```aafigure {"foreground": "#ff0000"}
+          +-----+   ^
+          |     |   |
+      --->+     +---o--->
+          |     |   |
+          +-----+   V
+    ```
 
 
 Testing
 -------
 
 
-.. code-block::
+.. code-block:: bash
 
-  $ pip install flake8 pytest pytest-coverage
-  $ flake8 src/
-  $ python setup.py --quiet install --force; pytest -v --cov=markdown_aafigure --cov-report term-missing tests/
+    $ pip install flake8 pytest pytest-coverage
+    $ flake8 src/
+    $ python setup.py --long-description | rst2html5 --strict > README.html
+    $ python setup.py --quiet install --force; pytest -v --cov=markdown_aafigure --cov-report term-missing tests/
 
 
 Publish
 -------
 
-.. code-block::
+.. code-block:: bash
 
-  $ pip install twine
-  $ rm dist/*
-  $ python setup.py sdist bdist_wheel
-  $ twine upload dist/*
+    $ pip install rst2html5
+    $ pip install twine
+    $ rm dist/*
+    $ python setup.py sdist bdist_wheel
+    $ twine upload dist/*
 
 
 MkDocs Integration
@@ -73,8 +75,8 @@ MkDocs Integration
 
 In your mkdocs.yml add this to markdown_extensions.
 
-.. code-block::
+.. code-block:: yaml
 
-  markdown_extensions:
-    - markdown_aafigure:
-        format: svg
+    markdown_extensions:
+      - markdown_aafigure:
+          format: svg
