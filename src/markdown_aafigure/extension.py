@@ -25,8 +25,6 @@ import aafigure
 def draw_aafigure(content, filename=None, output_fmt='svg'):
     if content.startswith("```aafigure"):
         content = content[len("```aafigure"):]
-    if content.startswith("```"):
-        content = content[len("```"):]
     if content.endswith("```"):
         content = content[:-len("```")]
 

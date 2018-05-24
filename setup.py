@@ -21,7 +21,7 @@ def read(filename):
 
 setuptools.setup(
     name='markdown-aafigure',
-    version='0.1.4',
+    version='0.1.6',
     description='aafigure extension for Python Markdown',
     long_description=read("README.rst"),
     author='Manuel Barkhau',
@@ -43,6 +43,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: Unix",
         "Operating System :: POSIX",
+        "Operating System :: Microsoft :: Windows",
         "Operating System :: MacOS :: MacOS X",
         "Programming Language :: Python",
         "Programming Language :: Python :: 2.7",
@@ -54,5 +55,4 @@ setuptools.setup(
         "Topic :: Software Development :: Libraries",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-
 )

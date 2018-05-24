@@ -33,7 +33,7 @@ In your markdown text you can define the block:
   ```
 
 Parameters can be set for individual figures.
-`Availabale parameters  <http://aafigure.readthedocs.io/en/latest/sphinxext.html#options>`_
+`Availabale parameters  <https://aafigure.readthedocs.io/en/latest/sphinxext.html#options>`_
 
 .. code-block::
 
@@ -54,7 +54,18 @@ Testing
 
   $ pip install flake8 pytest pytest-coverage
   $ flake8 src/
-  $ python setup.py --quiet install && pytest tests/
+  $ python setup.py --quiet install --force; pytest -v --cov=markdown_aafigure --cov-report term-missing tests/
+
+
+Publish
+-------
+
+.. code-block::
+
+  $ pip install twine
+  $ rm dist/*
+  $ python setup.py sdist bdist_wheel
+  $ twine upload dist/*
 
 
 MkDocs Integration

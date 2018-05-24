@@ -22,7 +22,7 @@ BASIC_FIG_TXT = r"""
 
 
 PARAM_FIG_TXT = r"""
-```aafigure {"foreground": "#ff0000"}
+```aafigure {"foreground": "#ff0000", "line_width": 22}
         +-----+   ^
         |     |   |
     --->+     +---o--->
@@ -110,10 +110,5 @@ def test_extended_aafigure():
     expected = EXTENDED_FIG_HTML_TEMPLATE.format(fig_data.decode('utf-8'))
     expected = expected.replace("\n", "")
     result = result.replace("\n", "")
-
-    with open("expected.html", mode='wb') as fh:
-        fh.write(expected.encode('utf-8'))
-    with open("result.html", mode='wb') as fh:
-        fh.write(result.encode('utf-8'))
 
     assert result == expected
