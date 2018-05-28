@@ -22,7 +22,7 @@ def read(filename):
 
 setuptools.setup(
     name='markdown-aafigure',
-    version='0.1.9',
+    version='0.2.0',
     description='aafigure extension for Python Markdown',
     long_description=read("README.rst"),
     long_description_content_type="text/x-rst",

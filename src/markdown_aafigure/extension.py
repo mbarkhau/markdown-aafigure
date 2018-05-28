@@ -12,11 +12,11 @@ from __future__ import unicode_literals
 
 import re
 import json
-import base64
+from xml.sax.saxutils import escape
 
 from markdown.extensions import Extension
-from markdown.blockprocessors import BlockProcessor
-from markdown.util import etree
+from markdown.preprocessors import Preprocessor
+from markdown.postprocessors import Postprocessor
 
 
 import aafigure
@@ -48,45 +48,60 @@ def draw_aafigure(content, filename=None, output_fmt='svg'):
     return output.getvalue()
 
 
-class AafigureProcessor(BlockProcessor):
+class AafigurePreprocessor(Preprocessor):
 
     RE = re.compile(r"^```aafigure")
 
-    def __init__(self, parser, extension):
-        super(AafigureProcessor, self).__init__(parser)
-        self.extension = extension
+    def __init__(self, md, ext):
+        super(AafigurePreprocessor, self).__init__(md)
+        self.ext = ext
 
-    def test(self, parent, block):
-        return bool(self.RE.match(block))
+    def run(self, lines):
+        out_lines = []
 
-    def run(self, parent, blocks):
-        fig_blocks = []
+        fence_marker = None
+        block_lines = []
 
-        for block in blocks:
-            block = block.strip()
-            fig_blocks.append(block)
-            if block.endswith("```"):
-                break
+        for line in lines:
+            if fence_marker:
+                block_lines.append(line)
+                if fence_marker in line:
+                    fence_marker = None
+                    fig_text = "\n".join(block_lines)
+                    del block_lines[:]
+                    fig_data = draw_aafigure(fig_text, output_fmt='svg')
+                    data_uri = 'data:image/svg+xml;utf8,{0}'.format(
+                        fig_data.decode('utf-8')
+                    )
+                    marker = "<p id='aafig{0}'>aafig{0}</p>".format(id(data_uri))
+                    out_lines.append(marker)
+                    self.ext.images[marker] = "<p><img src='{}' /></p>".format(data_uri)
+            else:
+                if self.RE.match(line):
+                    fence_marker = "```"
+                    block_lines.append(line)
+                else:
+                    out_lines.append(line)
 
-        raw_block = "\n".join(fig_blocks)
-        del blocks[:len(fig_blocks)]
+        return out_lines
 
-        output_fmt = self.extension.getConfig('format')
-        fig_data = draw_aafigure(raw_block, output_fmt=output_fmt)
-        if output_fmt == 'svg':
-            src_data = 'data:image/svg+xml;utf8,{0}'.format(
-                fig_data.decode('utf-8')
-            )
-        elif output_fmt == 'png':
-            src_data = 'data:image/png;base64,{0}'.format(
-                base64.b64encode(fig_data).decode('ascii')
-            )
-        else:
-            raise Exception("Format not supported: {}".format(output_fmt))
 
-        p = etree.SubElement(parent, 'p')
-        img = etree.SubElement(p, 'img')
-        img.attrib['src'] = src_data
+class AafigurePostprocessor(Postprocessor):
+
+    def __init__(self, md, ext):
+        super(AafigurePostprocessor, self).__init__(md)
+        self.ext = ext
+
+    def run(self, text):
+        print("!!!!!!", repr(text))
+        for marker, img in self.ext.images.items():
+            wrapped_marker = "<p>" + marker + "</p>"
+            if wrapped_marker in text:
+                text = text.replace(wrapped_marker, img)
+            elif marker in text:
+                text = text.replace(marker, img)
+
+        return text
 
 
 class AafigureExtension(Extension):
@@ -95,6 +110,7 @@ class AafigureExtension(Extension):
         self.config = {
             'format': ['svg', 'Format to use (svg/png)'],
         }
+        self.images = {}
         # TODO (mb 2018-05-23): We could have global defaults
         #   instead of an override for each fig. Don't know
         #   how to get the help text automatically though.
@@ -102,8 +118,15 @@ class AafigureExtension(Extension):
         #     self.config[k] = [v, ??]
         super(AafigureExtension, self).__init__(**kwargs)
 
+    def reset(self):
+        self.images.clear()
+
     def extendMarkdown(self, md, md_globals):
-        md.parser.blockprocessors.add(
-            'aafigure', AafigureProcessor(md.parser, self), '>indent'
-        )
+        preproc = AafigurePreprocessor(md, self)
+        if 'fenced_code_block' in md.preprocessors:
+            md.preprocessors.add('aafigure_fenced_code_block', preproc, '<fenced_code_block')
+        else:
+            md.preprocessors['aafigure_fenced_code_block'] = preproc
+
+        md.postprocessors['aafigure_fenced_code_block'] = AafigurePostprocessor(md, self)
         md.registerExtension(self)

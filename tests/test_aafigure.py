@@ -37,6 +37,14 @@ PARAM_FIG_TXT = r"""
 """.strip()
 
 
+DEFAULT_MKDOCS_EXTENSIONS = [
+    'meta',
+    'toc',
+    'tables',
+    'fenced_code',
+]
+
+
 EXTENDED_FIG_TXT = r"""
 # Heading
 
@@ -55,15 +63,15 @@ postscript
 
 
 EXTENDED_FIG_HTML_TEMPLATE = r"""
-<h1>Heading</h1>
-<p>prelude</p><p>
-<img src="data:image/svg+xml;utf8,{}" /></p>
+<h1 id="heading">Heading</h1>
+<p>prelude</p>
+<p><img src='data:image/svg+xml;utf8,{}' /></p>
 <p>postscript</p>
 """
 
 
 def test_regexp():
-    assert ext.AafigureProcessor.RE.match(BASIC_FIG_TXT)
+    assert ext.AafigurePreprocessor.RE.match(BASIC_FIG_TXT)
 
 
 def test_basic_aafigure():
@@ -72,7 +80,7 @@ def test_basic_aafigure():
     assert b"<svg" in fig_data
     assert b"</svg>" in fig_data
 
-    expected = '<p><img src="data:image/svg+xml;utf8,{}" /></p>'.format(
+    expected = "<p><img src='data:image/svg+xml;utf8,{}' /></p>".format(
         fig_data.decode('utf-8')
     )
 
@@ -97,9 +105,13 @@ def test_param_aafigure():
     result = markdown(PARAM_FIG_TXT, extensions=['markdown_aafigure'])
     result = unescape(result).replace('&quot;', '\"')
 
-    expected = '<p><img src="data:image/svg+xml;utf8,{}" /></p>'.format(
+    expected = "<p><img src='data:image/svg+xml;utf8,{}' /></p>".format(
         fig_data.decode('utf-8')
     )
+
+    expected = expected.replace("\n", "")
+    result = result.replace("\n", "")
+
     assert result == expected
 
 
@@ -109,7 +121,8 @@ def test_extended_aafigure():
     assert b"<svg" in fig_data
     assert b"</svg>" in fig_data
 
-    result = markdown(EXTENDED_FIG_TXT, extensions=['markdown_aafigure'])
+    extensions = DEFAULT_MKDOCS_EXTENSIONS + ['markdown_aafigure']
+    result = markdown(EXTENDED_FIG_TXT, extensions=extensions)
     result = unescape(result).replace('&quot;', '\"')
 
     expected = EXTENDED_FIG_HTML_TEMPLATE.format(fig_data.decode('utf-8'))
