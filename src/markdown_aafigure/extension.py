@@ -12,7 +12,6 @@ from __future__ import unicode_literals
 
 import re
 import json
-from xml.sax.saxutils import escape
 
 from markdown.extensions import Extension
 from markdown.preprocessors import Preprocessor
@@ -65,17 +64,20 @@ class AafigurePreprocessor(Preprocessor):
         for line in lines:
             if fence_marker:
                 block_lines.append(line)
-                if fence_marker in line:
-                    fence_marker = None
-                    fig_text = "\n".join(block_lines)
-                    del block_lines[:]
-                    fig_data = draw_aafigure(fig_text, output_fmt='svg')
-                    data_uri = 'data:image/svg+xml;utf8,{0}'.format(
-                        fig_data.decode('utf-8')
-                    )
-                    marker = "<p id='aafig{0}'>aafig{0}</p>".format(id(data_uri))
-                    out_lines.append(marker)
-                    self.ext.images[marker] = "<p><img src='{}' /></p>".format(data_uri)
+                if fence_marker not in line:
+                    continue
+
+                fence_marker = None
+                fig_text = "\n".join(block_lines)
+                del block_lines[:]
+                fig_data = draw_aafigure(fig_text, output_fmt='svg')
+                data_uri = 'data:image/svg+xml;utf8,{0}'.format(
+                    fig_data.decode('utf-8')
+                )
+                marker = "<p id='aafig{0}'>aafig{0}</p>".format(id(data_uri))
+                img_text = "<p><img src='{}' /></p>".format(data_uri)
+                out_lines.append(marker)
+                self.ext.images[marker] = img_text
             else:
                 if self.RE.match(line):
                     fence_marker = "```"
@@ -124,9 +126,12 @@ class AafigureExtension(Extension):
     def extendMarkdown(self, md, md_globals):
         preproc = AafigurePreprocessor(md, self)
         if 'fenced_code_block' in md.preprocessors:
-            md.preprocessors.add('aafigure_fenced_code_block', preproc, '<fenced_code_block')
+            md.preprocessors.add(
+                'aafigure_fenced_code_block', preproc, '<fenced_code_block'
+            )
         else:
             md.preprocessors['aafigure_fenced_code_block'] = preproc
 
-        md.postprocessors['aafigure_fenced_code_block'] = AafigurePostprocessor(md, self)
+        postproc = AafigurePostprocessor(md, self)
+        md.postprocessors['aafigure_fenced_code_block'] = postproc
         md.registerExtension(self)
