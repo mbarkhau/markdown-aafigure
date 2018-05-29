@@ -95,7 +95,6 @@ class AafigurePostprocessor(Postprocessor):
         self.ext = ext
 
     def run(self, text):
-        print("!!!!!!", repr(text))
         for marker, img in self.ext.images.items():
             wrapped_marker = "<p>" + marker + "</p>"
             if wrapped_marker in text:
