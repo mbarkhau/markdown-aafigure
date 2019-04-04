@@ -12,7 +12,7 @@ import typing as typ
 try:
     from urllib.parse import quote
 except ImportError:
-    from urllib import quote
+    from urllib import quote    # type: ignore
 
 
 from markdown.extensions import Extension
