@@ -96,8 +96,8 @@ markdown_extensions:
 [pypi_img]: https://img.shields.io/badge/PyPI-wheels-green.svg
 [pypi_ref]: https://pypi.org/project/markdown_aafigure/#files
 
-[downloads_img]: https://pepy.tech/badge/markdown_aafigure/month
-[downloads_ref]: https://pepy.tech/project/markdown_aafigure
+[downloads_img]: https://pepy.tech/badge/markdown-aafigure/month
+[downloads_ref]: https://pepy.tech/project/markdown-aafigure
 
 [version_img]: https://img.shields.io/static/v1.svg?label=PyCalVer&message=v201904.0001-alpha&color=blue
 [version_ref]: https://pypi.org/project/pycalver/
