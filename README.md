@@ -35,28 +35,24 @@ $ pip install Pillow    # only for any format other than svg
 
 In your markdown text you can define the block:
 
-```
-\`\`\`aafigure
-      +-----+   ^
-      |     |   |
-  --->+     +---o--->
-      |     |   |
-      +-----+   V
-\`\`\`
-```
+    ```aafigure
+          +-----+   ^
+          |     |   |
+      --->+     +---o--->
+          |     |   |
+          +-----+   V
+    ```
 
 Parameters can be set for individual figures.
 [Availabale parameters](https://aafigure.readthedocs.io/en/latest/sphinxext.html#options)
 
-```
-\`\`\`aafigure {"foreground": "#ff0000"}
-      +-----+   ^
-      |     |   |
-  --->+     +---o--->
-      |     |   |
-      +-----+   V
-\`\`\`
-```
+    ```aafigure {"foreground": "#ff0000"}
+          +-----+   ^
+          |     |   |
+      --->+     +---o--->
+          |     |   |
+          +-----+   V
+    ```
 
 ## Testing
 
