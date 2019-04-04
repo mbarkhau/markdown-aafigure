@@ -51,7 +51,7 @@ setuptools.setup(
     author="Manuel Barkhau",
     author_email="mbarkhau@gmail.com",
     url="https://gitlab.com/mbarkhau/markdown_aafigure",
-    version="201904.2",
+    version="201904.3",
     keywords="markdown aafigure",
     description="aafigure extension for Python Markdown",
     long_description=long_description,

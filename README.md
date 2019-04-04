@@ -7,7 +7,7 @@ Project/Repo:
 
 [![MIT License][license_img]][license_ref]
 [![Supported Python Versions][pyversions_img]][pyversions_ref]
-[![PyCalVer v201904.0002][version_img]][version_ref]
+[![PyCalVer v201904.0003][version_img]][version_ref]
 [![PyPI Version][pypi_img]][pypi_ref]
 [![PyPI Downloads][downloads_img]][downloads_ref]
 
@@ -95,7 +95,7 @@ markdown_extensions:
 [downloads_img]: https://pepy.tech/badge/markdown-aafigure/month
 [downloads_ref]: https://pepy.tech/project/markdown-aafigure
 
-[version_img]: https://img.shields.io/static/v1.svg?label=PyCalVer&message=v201904.0002&color=blue
+[version_img]: https://img.shields.io/static/v1.svg?label=PyCalVer&message=v201904.0003&color=blue
 [version_ref]: https://pypi.org/project/pycalver/
 
 [pyversions_img]: https://img.shields.io/pypi/pyversions/markdown_aafigure.svg
