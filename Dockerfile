@@ -13,6 +13,4 @@ ADD makefile makefile
 ADD makefile.config.make makefile.config.make
 ADD makefile.extra.make makefile.extra.make
 
-ENV PYTHONPATH="src/:vendor/"
-
 CMD make serve
