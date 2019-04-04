@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # This file is part of markdown-aafigure.
 # https://github.com/mbarkhau/markdown-aafigure
 # (C) 2018 Manuel Barkhau <mbarkhau@gmail.com>
