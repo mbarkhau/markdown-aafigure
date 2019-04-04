@@ -18,14 +18,19 @@ downloads/
 eggs/
 lib/
 lib64/
+vendor/
 parts/
 sdist/
 var/
+public/
+.mypy_cache/
 *.egg-info/
 .installed.cfg
 *.egg
 .eggs/
 .pytest_cache/
+.ipynb_checkpoints/
+package-lock.json
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -39,11 +44,13 @@ pip-delete-this-directory.txt
 
 # Unit test / coverage reports
 htmlcov/
+mypycov/
 .tox/
 .coverage
 .cache
 nosetests.xml
 coverage.xml
+.coverage*
 
 # Translations
 *.mo
@@ -58,3 +65,8 @@ docs/_build/
 # PyBuilder
 target/
 .idea
+.*.make_marker
+README.html
+envs.txt
+test_build_logs/*.log
+build/miniconda3.sh
