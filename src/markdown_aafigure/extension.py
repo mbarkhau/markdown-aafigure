@@ -9,6 +9,12 @@ import re
 import json
 import typing as typ
 
+try:
+    from urllib.parse import quote
+except ImportError:
+    from urllib import quote
+
+
 from markdown.extensions import Extension
 from markdown.preprocessors import Preprocessor
 from markdown.postprocessors import Postprocessor
@@ -43,6 +49,13 @@ def draw_aafigure(content: str, filename: typ.Any = None, output_fmt: str = 'svg
     return output.getvalue()
 
 
+def fig2svg_uri(fig_text: str) -> str:
+    img_data: bytes = draw_aafigure(fig_text, output_fmt='svg')
+    img_text: str   = img_data.decode('utf-8')
+    img_text = quote(img_text.replace("\n", "").replace(">    <", "/><"))
+    return f"data:image/svg+xml;utf8,{img_text}"
+
+
 class AafigureExtension(Extension):
     def __init__(self, **kwargs) -> None:
         self.config = {'format': ['svg', "Format to use (svg/png)"]}
@@ -75,33 +88,30 @@ class AafigurePreprocessor(Preprocessor):
         self.ext: AafigureExtension = ext
 
     def run(self, lines: typ.List[str]) -> typ.List[str]:
-        fence_marker: typ.Optional[str] = None
-        out_lines   : typ.List[str] = []
-        block_lines : typ.List[str] = []
+        is_in_fence = False
+        out_lines  : typ.List[str] = []
+        block_lines: typ.List[str] = []
 
         for line in lines:
-            if fence_marker:
+            if is_in_fence:
                 block_lines.append(line)
-                if fence_marker not in line:
+                if "```" not in line:
                     continue
 
-                fence_marker = None
-                fig_text     = "\n".join(block_lines)
+                is_in_fence = False
+                fig_text    = "\n".join(block_lines)
                 del block_lines[:]
-                img_data: bytes = draw_aafigure(fig_text, output_fmt='svg')
-                img_text: str   = img_data.decode('utf-8')
-                data_uri    = f"data:image/svg+xml;utf8,{img_text}"
+                data_uri    = fig2svg_uri(fig_text)
                 data_uri_id = id(data_uri)
                 marker      = f"<p id='aafig{data_uri_id}'>aafig{data_uri_id}</p>"
-                img_text    = f"<p><img src='{data_uri}' /></p>"
+                tag_text    = f"<p><img src='{data_uri}' /></p>"
                 out_lines.append(marker)
-                self.ext.images[marker] = img_text
+                self.ext.images[marker] = tag_text
+            elif self.RE.match(line):
+                is_in_fence = True
+                block_lines.append(line)
             else:
-                if self.RE.match(line):
-                    fence_marker = "```"
-                    block_lines.append(line)
-                else:
-                    out_lines.append(line)
+                out_lines.append(line)
 
         return out_lines
 

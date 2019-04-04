@@ -60,7 +60,7 @@ postscript
 EXTENDED_FIG_HTML_TEMPLATE = r"""
 <h1 id="heading">Heading</h1>
 <p>prelude</p>
-<p><img src='data:image/svg+xml;utf8,{}' /></p>
+<p><img src='{}' /></p>
 <p>postscript</p>
 """
 
@@ -75,16 +75,18 @@ def test_basic_aafigure():
     assert b"<svg" in fig_data
     assert b"</svg>" in fig_data
 
-    expected = "<p><img src='data:image/svg+xml;utf8,{}' /></p>".format(fig_data.decode('utf-8'))
+    img_uri = ext.fig2svg_uri(BASIC_FIG_TXT)
+    assert img_uri.startswith("data:image/svg+xml;utf8,")
+    expected = "<p><img src='{}' /></p>".format(img_uri)
 
     result = markdown(BASIC_FIG_TXT, extensions=['markdown_aafigure'])
+    assert img_uri in result
 
     # with open("debug_img_output_aafigure.svg", mode='wb') as fh:
     #     fh.write(fig_data)
     # with open("debug_img_output_mardown.html", mode='wb') as fh:
     #     fh.write(result.encode('utf-8'))
 
-    result = unescape(result).replace("&quot;", '\"')
     assert result == expected
 
 
@@ -96,12 +98,9 @@ def test_param_aafigure():
     assert b'stroke="#ff0000"' in fig_data
 
     result = markdown(PARAM_FIG_TXT, extensions=['markdown_aafigure'])
-    result = unescape(result).replace("&quot;", '\"')
 
-    expected = "<p><img src='data:image/svg+xml;utf8,{}' /></p>".format(fig_data.decode('utf-8'))
-
-    expected = expected.replace("\n", "")
-    result   = result.replace("\n", "")
+    img_uri = ext.fig2svg_uri(PARAM_FIG_TXT)
+    expected = "<p><img src='{}' /></p>".format(img_uri)
 
     assert result == expected
 
@@ -114,9 +113,9 @@ def test_extended_aafigure():
 
     extensions = DEFAULT_MKDOCS_EXTENSIONS + ['markdown_aafigure']
     result     = markdown(EXTENDED_FIG_TXT, extensions=extensions)
-    result     = unescape(result).replace("&quot;", '\"')
 
-    expected = EXTENDED_FIG_HTML_TEMPLATE.format(fig_data.decode('utf-8'))
+    img_uri = ext.fig2svg_uri(BASIC_FIG_TXT)
+    expected = EXTENDED_FIG_HTML_TEMPLATE.format(img_uri)
     expected = expected.replace("\n", "")
     result   = result.replace("\n", "")
 
