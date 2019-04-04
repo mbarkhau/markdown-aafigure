@@ -5,13 +5,9 @@
 #
 # SPDX-License-Identifier:    MIT
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import re
 import json
+import typing as typ
 
 from markdown.extensions import Extension
 from markdown.preprocessors import Preprocessor
@@ -21,11 +17,11 @@ from markdown.postprocessors import Postprocessor
 import aafigure
 
 
-def draw_aafigure(content, filename=None, output_fmt='svg'):
+def draw_aafigure(content: str, filename: typ.Any = None, output_fmt: str = 'svg') -> bytes:
     if content.startswith("```aafigure"):
-        content = content[len("```aafigure"):]
+        content = content[len("```aafigure") :]
     if content.endswith("```"):
-        content = content[:-len("```")]
+        content = content[: -len("```")]
 
     options = {'format': output_fmt}
     header, rest = content.split("\n", 1)
@@ -37,8 +33,8 @@ def draw_aafigure(content, filename=None, output_fmt='svg'):
         if option_name not in aafigure.aafigure.DEFAULT_OPTIONS:
             raise ValueError("Invalid Option: {}".format(option_name))
 
-        option_val = options[option_name]
-        default_val = aafigure.aafigure.DEFAULT_OPTIONS[option_name]
+        option_val   = options[option_name]
+        default_val  = aafigure.aafigure.DEFAULT_OPTIONS[option_name]
         default_type = type(default_val)
         if not isinstance(option_val, default_type):
             options[option_name] = default_type(option_val)
@@ -47,19 +43,41 @@ def draw_aafigure(content, filename=None, output_fmt='svg'):
     return output.getvalue()
 
 
+class AafigureExtension(Extension):
+    def __init__(self, **kwargs) -> None:
+        self.config = {'format': ['svg', "Format to use (svg/png)"]}
+        self.images: typ.Dict[str, str] = {}
+        # TODO (mb 2018-05-23): We could have global defaults
+        #   instead of an override for each fig. Don't know
+        #   how to get the help text automatically though.
+        # for k, v in aafigure.aafigure.DEFAULT_OPTIONS.items():
+        #     self.config[k] = [v, ??]
+        super(AafigureExtension, self).__init__(**kwargs)
+
+    def reset(self) -> None:
+        self.images.clear()
+
+    def extendMarkdown(self, md, *args, **kwargs) -> None:
+        preproc = AafigurePreprocessor(md, self)
+        md.preprocessors.register(preproc, name='aafigure_fenced_code_block', priority=50)
+
+        postproc = AafigurePostprocessor(md, self)
+        md.postprocessors.register(postproc, name='aafigure_fenced_code_block', priority=0)
+        md.registerExtension(self)
+
+
 class AafigurePreprocessor(Preprocessor):
 
     RE = re.compile(r"^```aafigure")
 
-    def __init__(self, md, ext):
+    def __init__(self, md, ext: AafigureExtension) -> None:
         super(AafigurePreprocessor, self).__init__(md)
-        self.ext = ext
+        self.ext: AafigureExtension = ext
 
-    def run(self, lines):
-        out_lines = []
-
-        fence_marker = None
-        block_lines = []
+    def run(self, lines: typ.List[str]) -> typ.List[str]:
+        fence_marker: typ.Optional[str] = None
+        out_lines   : typ.List[str] = []
+        block_lines : typ.List[str] = []
 
         for line in lines:
             if fence_marker:
@@ -68,14 +86,14 @@ class AafigurePreprocessor(Preprocessor):
                     continue
 
                 fence_marker = None
-                fig_text = "\n".join(block_lines)
+                fig_text     = "\n".join(block_lines)
                 del block_lines[:]
-                fig_data = draw_aafigure(fig_text, output_fmt='svg')
-                data_uri = 'data:image/svg+xml;utf8,{0}'.format(
-                    fig_data.decode('utf-8')
-                )
-                marker = "<p id='aafig{0}'>aafig{0}</p>".format(id(data_uri))
-                img_text = "<p><img src='{}' /></p>".format(data_uri)
+                img_data: bytes = draw_aafigure(fig_text, output_fmt='svg')
+                img_text: str   = img_data.decode('utf-8')
+                data_uri    = f"data:image/svg+xml;utf8,{img_text}"
+                data_uri_id = id(data_uri)
+                marker      = f"<p id='aafig{data_uri_id}'>aafig{data_uri_id}</p>"
+                img_text    = f"<p><img src='{data_uri}' /></p>"
                 out_lines.append(marker)
                 self.ext.images[marker] = img_text
             else:
@@ -89,12 +107,11 @@ class AafigurePreprocessor(Preprocessor):
 
 
 class AafigurePostprocessor(Postprocessor):
-
-    def __init__(self, md, ext):
+    def __init__(self, md, ext: AafigureExtension) -> None:
         super(AafigurePostprocessor, self).__init__(md)
-        self.ext = ext
+        self.ext: AafigureExtension = ext
 
-    def run(self, text):
+    def run(self, text: str) -> str:
         for marker, img in self.ext.images.items():
             wrapped_marker = "<p>" + marker + "</p>"
             if wrapped_marker in text:
@@ -103,34 +120,3 @@ class AafigurePostprocessor(Postprocessor):
                 text = text.replace(marker, img)
 
         return text
-
-
-class AafigureExtension(Extension):
-
-    def __init__(self, **kwargs):
-        self.config = {
-            'format': ['svg', 'Format to use (svg/png)'],
-        }
-        self.images = {}
-        # TODO (mb 2018-05-23): We could have global defaults
-        #   instead of an override for each fig. Don't know
-        #   how to get the help text automatically though.
-        # for k, v in aafigure.aafigure.DEFAULT_OPTIONS.items():
-        #     self.config[k] = [v, ??]
-        super(AafigureExtension, self).__init__(**kwargs)
-
-    def reset(self):
-        self.images.clear()
-
-    def extendMarkdown(self, md, md_globals):
-        preproc = AafigurePreprocessor(md, self)
-        if 'fenced_code_block' in md.preprocessors:
-            md.preprocessors.add(
-                'aafigure_fenced_code_block', preproc, '<fenced_code_block'
-            )
-        else:
-            md.preprocessors['aafigure_fenced_code_block'] = preproc
-
-        postproc = AafigurePostprocessor(md, self)
-        md.postprocessors['aafigure_fenced_code_block'] = postproc
-        md.registerExtension(self)
