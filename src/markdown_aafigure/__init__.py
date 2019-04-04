@@ -12,5 +12,8 @@ from __future__ import unicode_literals
 from markdown_aafigure.extension import AafigureExtension
 
 
+__version__ = "v201904.0001"
+
+
 def makeExtension(**kwargs):
     return AafigureExtension(**kwargs)

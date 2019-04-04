@@ -50,7 +50,7 @@ setuptools.setup(
     author="Manuel Barkhau",
     author_email="mbarkhau@gmail.com",
     url="https://gitlab.com/mbarkhau/markdown_aafigure",
-    version="201904.1",
+    version="201904.1a0",
     keywords="markdown aafigure",
     description="aafigure extension for Python Markdown",
     long_description=long_description,
@@ -62,7 +62,7 @@ setuptools.setup(
 
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
-        "Development Status :: 5 - Stable",
+        "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
         "Environment :: Other Environment",
         "Intended Audience :: Developers",
