@@ -15,6 +15,16 @@ from xml.sax.saxutils import unescape
 from markdown import markdown
 import markdown_aafigure.extension as ext
 
+import pytest
+
+try:
+    import PIL
+
+    IS_PIL_INSTALLED = True
+except ImportError:
+    IS_PIL_INSTALLED = False
+
+
 BASIC_FIG_TXT = r"""
 ```aafigure
         +-----+   ^
@@ -105,6 +115,12 @@ def test_basic_png_aafigure():
     assert img_uri in result
 
     assert result == expected
+
+
+if not IS_PIL_INSTALLED:
+    test_basic_png_aafigure = pytest.mark.skip(reason="PIL is not installed")(
+        test_basic_png_aafigure
+    )
 
 
 def test_param_aafigure():
