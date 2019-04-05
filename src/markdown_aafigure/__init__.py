@@ -7,7 +7,7 @@
 from markdown_aafigure.extension import AafigureExtension
 
 
-__version__ = "v201904.0003"
+__version__ = "v201904.0004"
 
 
 def makeExtension(**kwargs):
