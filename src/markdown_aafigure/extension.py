@@ -6,18 +6,12 @@
 
 import re
 import json
+import base64
 import typing as typ
-
-try:
-    from urllib.parse import quote
-except ImportError:
-    from urllib import quote    # type: ignore
-
 
 from markdown.extensions import Extension
 from markdown.preprocessors import Preprocessor
 from markdown.postprocessors import Postprocessor
-
 
 import aafigure
 
@@ -48,11 +42,26 @@ def draw_aafigure(content: str, filename: typ.Any = None, output_fmt: str = 'svg
     return output.getvalue()
 
 
+def fig2img_uri(fig_text: str, output_fmt: str = 'svg') -> str:
+    if output_fmt == 'svg':
+        mime = "image/svg+xml"
+    elif output_fmt == 'png':
+        mime = "image/png"
+    else:
+        raise NotImplementedError(output_fmt)
+
+    img_data    : bytes = draw_aafigure(fig_text, output_fmt=output_fmt)
+    img_b64_data: bytes = base64.standard_b64encode(img_data)
+    img_b64_text = img_b64_data.decode('ascii')
+    return f"data:{mime};base64,{img_b64_text}"
+
+
 def fig2svg_uri(fig_text: str) -> str:
-    img_data: bytes = draw_aafigure(fig_text, output_fmt='svg')
-    img_text: str   = img_data.decode('utf-8')
-    img_text = quote(img_text.replace("\n", "").replace(">    <", "/><"))
-    return f"data:image/svg+xml;utf8,{img_text}"
+    return fig2img_uri(fig_text, output_fmt='svg')
+
+
+def fig2png_uri(fig_text: str) -> str:
+    return fig2img_uri(fig_text, output_fmt='png')
 
 
 class AafigureExtension(Extension):
@@ -91,6 +100,8 @@ class AafigurePreprocessor(Preprocessor):
         out_lines  : typ.List[str] = []
         block_lines: typ.List[str] = []
 
+        output_fmt: str = self.ext.getConfig('format', 'svg')
+
         for line in lines:
             if is_in_fence:
                 block_lines.append(line)
@@ -100,10 +111,10 @@ class AafigurePreprocessor(Preprocessor):
                 is_in_fence = False
                 fig_text    = "\n".join(block_lines)
                 del block_lines[:]
-                data_uri    = fig2svg_uri(fig_text)
-                data_uri_id = id(data_uri)
-                marker      = f"<p id='aafig{data_uri_id}'>aafig{data_uri_id}</p>"
-                tag_text    = f"<p><img src='{data_uri}' /></p>"
+                img_uri    = fig2img_uri(fig_text, output_fmt=output_fmt)
+                img_uri_id = id(img_uri)
+                marker     = f"<p id='aafig{img_uri_id}'>aafig{img_uri_id}</p>"
+                tag_text   = f"<p><img src='{img_uri}' /></p>"
                 out_lines.append(marker)
                 self.ext.images[marker] = tag_text
             elif self.RE.match(line):

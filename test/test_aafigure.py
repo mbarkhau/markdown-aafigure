@@ -69,14 +69,14 @@ def test_regexp():
     assert ext.AafigurePreprocessor.RE.match(BASIC_FIG_TXT)
 
 
-def test_basic_aafigure():
+def test_basic_svg_aafigure():
     fig_data = ext.draw_aafigure(BASIC_FIG_TXT, output_fmt='svg')
 
     assert b"<svg" in fig_data
     assert b"</svg>" in fig_data
 
     img_uri = ext.fig2svg_uri(BASIC_FIG_TXT)
-    assert img_uri.startswith("data:image/svg+xml;utf8,")
+    assert img_uri.startswith("data:image/svg+xml;base64,")
     expected = "<p><img src='{}' /></p>".format(img_uri)
 
     result = markdown(BASIC_FIG_TXT, extensions=['markdown_aafigure'])
@@ -90,6 +90,23 @@ def test_basic_aafigure():
     assert result == expected
 
 
+def test_basic_png_aafigure():
+    fig_data = ext.draw_aafigure(BASIC_FIG_TXT, output_fmt='png')
+
+    img_uri = ext.fig2png_uri(BASIC_FIG_TXT)
+    assert img_uri.startswith("data:image/png;base64,")
+    expected = "<p><img src='{}' /></p>".format(img_uri)
+
+    result = markdown(
+        BASIC_FIG_TXT,
+        extensions=['markdown_aafigure'],
+        extension_configs={'markdown_aafigure': {'format': 'png'}},
+    )
+    assert img_uri in result
+
+    assert result == expected
+
+
 def test_param_aafigure():
     fig_data = ext.draw_aafigure(PARAM_FIG_TXT, output_fmt='svg')
 
@@ -99,7 +116,7 @@ def test_param_aafigure():
 
     result = markdown(PARAM_FIG_TXT, extensions=['markdown_aafigure'])
 
-    img_uri = ext.fig2svg_uri(PARAM_FIG_TXT)
+    img_uri  = ext.fig2svg_uri(PARAM_FIG_TXT)
     expected = "<p><img src='{}' /></p>".format(img_uri)
 
     assert result == expected
@@ -114,7 +131,7 @@ def test_extended_aafigure():
     extensions = DEFAULT_MKDOCS_EXTENSIONS + ['markdown_aafigure']
     result     = markdown(EXTENDED_FIG_TXT, extensions=extensions)
 
-    img_uri = ext.fig2svg_uri(BASIC_FIG_TXT)
+    img_uri  = ext.fig2svg_uri(BASIC_FIG_TXT)
     expected = EXTENDED_FIG_HTML_TEMPLATE.format(img_uri)
     expected = expected.replace("\n", "")
     result   = result.replace("\n", "")
