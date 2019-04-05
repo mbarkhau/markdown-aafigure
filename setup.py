@@ -22,13 +22,6 @@ def read(*sub_paths):
 package_dir = {"": "src"}
 
 
-install_requires = [
-    line.strip()
-    for line in read("requirements", "pypi.txt").splitlines()
-    if line.strip() and not line.startswith("#")
-]
-
-
 if any(arg.startswith("bdist") for arg in sys.argv):
     try:
         import lib3to6
@@ -58,7 +51,11 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     packages=["markdown_aafigure"],
     package_dir=package_dir,
-    install_requires=install_requires,
+    install_requires=[
+        "Markdown",
+        "aafigure",
+        "typing",
+    ],
     zip_safe=True,
 
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers

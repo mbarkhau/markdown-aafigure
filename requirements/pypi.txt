@@ -10,3 +10,4 @@
 Markdown
 aafigure
 typing
+Pillow
