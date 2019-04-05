@@ -27,3 +27,6 @@ lib3to6
 
 # needed for mypy coverage report
 lxml
+
+# optional needed for rendering png
+Pillow
