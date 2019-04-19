@@ -208,12 +208,6 @@ def test_basic_png_aafigure_legacy():
     assert result == expected
 
 
-if not IS_PIL_INSTALLED:
-    test_basic_png_aafigure_legacy = pytest.mark.skip(reason="PIL is not installed")(
-        test_basic_png_aafigure_legacy
-    )
-
-
 def test_param_aafigure():
     fig_html = ext.draw_aafig(PARAM_BLOCK_TXT)
 
@@ -253,3 +247,12 @@ def test_html_output():
     result     = markdown(HTMLTEST_TXT, extensions=extensions)
     with open("/tmp/aafigure.html", mode="w") as fh:
         fh.write(result)
+
+
+if not IS_PIL_INSTALLED:
+    test_basic_png_aafigure_legacy = pytest.mark.skip(reason="PIL is not installed")(
+        test_basic_png_aafigure_legacy
+    )
+    test_html_output = pytest.mark.skip(reason="PIL is not installed")(
+        test_html_output
+    )
