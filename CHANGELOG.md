@@ -4,6 +4,7 @@
 
  - Add: Support for inline svg
  - Add: `tag_type` option for better control of embedding
+ - Depricated: `format` parameter
 
 
 ## v201904.0004
