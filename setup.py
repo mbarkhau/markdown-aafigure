@@ -45,7 +45,7 @@ setuptools.setup(
     author_email="mbarkhau@gmail.com",
     url="https://gitlab.com/mbarkhau/markdown_aafigure",
     version="201904.4",
-    keywords="markdown aafigure",
+    keywords="markdown aafigure extension",
     description="aafigure extension for Python Markdown",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -57,6 +57,11 @@ setuptools.setup(
         "typing",
     ],
     zip_safe=True,
+    entry_points={
+        'markdown.extensions': [
+            'markdown_aafigure = markdown_aafigure.extension:AafigureExtension',
+        ]
+    },
 
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[

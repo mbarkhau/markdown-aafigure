@@ -1,7 +1,7 @@
 # [Markdown aafigure][repo_ref]
 
 This is an extension for [Python Markdown](https://python-markdown.github.io/)
-which can render diagrams using [aafigure](https://aafigure.readthedocs.io/).
+which renders diagrams using [aafigure](https://aafigure.readthedocs.io/).
 
 Project/Repo:
 
@@ -24,12 +24,16 @@ Code Quality/CI:
 | Manuel Barkhau (mbarkhau@gmail.com) | author/maintainer | 2018-05 | -     |
 
 
+*INFO*: You may want to consider using the [markdown-svgbob](https://pypi.org/project/markdown-svgbob/) extension instead of this one. svgbob has an [online editor](https://ivanceras.github.io/svgbob-editor/) and supports a wider range of shapes and diagrams. Its main disadvantage is that it "only" has builtin support for x86_64 on Windows, Linux and Mac, in contrast to aafigure which is pure python and supported everywhere.
+
+
 ## Install
 
 ```bash
 $ pip install markdown-aafigure
-$ pip install Pillow    # only for any format other than svg
+$ pip install Pillow    # only if you want to render as png
 ```
+
 
 ## Use
 
@@ -54,13 +58,16 @@ Parameters can be set for individual figures.
           +-----+   V
     ```
 
-## Testing
+
+## Development/Testing
 
 ```bash
-$ cd markdown-aafigure
+$ git clone https://gitlab.com/mbarkhau/markdown_aafigure
+$ cd markdown_aafigure
 $ make install
 $ make lint mypy test
 ```
+
 
 ## MkDocs Integration
 
@@ -69,8 +76,11 @@ In your `mkdocs.yml` add this to markdown_extensions.
 ```yaml
 markdown_extensions:
   - markdown_aafigure:
-      format: svg
+      tag_type: inline_svg
 ```
+
+Valid options for `tag_type` are `inline_svg` (the default), `img_utf8_svg`, `img_base64_svg`, `img_base64_png`.
+
 
 [repo_ref]: https://gitlab.com/mbarkhau/markdown_aafigure
 

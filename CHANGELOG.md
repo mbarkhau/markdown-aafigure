@@ -1,5 +1,11 @@
 # Changelog for https://gitlab.com/mbarkhau/markdown_aafigure
 
+## v201904.0005
+
+ - Add: Support for inline svg
+ - Add: `tag_type` option for better control of embedding
+
+
 ## v201904.0004
 
  - Add: Support of format: png extension configuration (requires Pillow)

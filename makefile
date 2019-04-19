@@ -364,7 +364,7 @@ test:
 		env_py=$${env_py_paths[i]}; \
 		$${env_py} -m pip uninstall --yes $(PKG_NAME); \
 		$${env_py} -m pip install --upgrade build/test_wheel/*.whl; \
-		ENV=$${ENV-dev} $${env_py} -m pytest test/; \
+		PYTHONPATH="" ENV=$${ENV-dev} $${env_py} -m pytest test/; \
 	done;
 
 	@rm -rf ".pytest_cache";

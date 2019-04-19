@@ -4,7 +4,7 @@
 AUTHOR_NAME="Manuel Barkhau"
 AUTHOR_EMAIL="mbarkhau@gmail.com"
 
-KEYWORDS="markdown aafigure"
+KEYWORDS="markdown aafigure extension"
 DESCRIPTION="aafigure extension for Python Markdown"
 
 LICENSE_ID="MIT"
