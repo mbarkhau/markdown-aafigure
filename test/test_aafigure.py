@@ -209,8 +209,8 @@ def test_basic_png_aafigure_legacy():
 
 
 if not IS_PIL_INSTALLED:
-    test_basic_png_aafigure = pytest.mark.skip(reason="PIL is not installed")(
-        test_basic_png_aafigure
+    test_basic_png_aafigure_legacy = pytest.mark.skip(reason="PIL is not installed")(
+        test_basic_png_aafigure_legacy
     )
 
 
