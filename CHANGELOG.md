@@ -1,6 +1,6 @@
 # Changelog for https://gitlab.com/mbarkhau/markdown_aafigure
 
-## v201907.0006-beta
+## v201907.0006
 
  - Fix: don't require typing package for py<35
 
