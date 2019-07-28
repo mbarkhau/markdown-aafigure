@@ -1,5 +1,10 @@
 # Changelog for https://gitlab.com/mbarkhau/markdown_aafigure
 
+## v201907.0006-beta
+
+ - Fix: don't require typing package for py<35
+
+
 ## v201904.0005
 
  - Add: Support for inline svg
