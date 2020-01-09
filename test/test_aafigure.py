@@ -10,15 +10,13 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from xml.sax.saxutils import unescape
-
 from markdown import markdown
 import markdown_aafigure.extension as ext
 
 import pytest
 
 try:
-    import PIL
+    import PIL  # noqa
 
     IS_PIL_INSTALLED = True
 except ImportError:
@@ -253,6 +251,4 @@ if not IS_PIL_INSTALLED:
     test_basic_png_aafigure_legacy = pytest.mark.skip(reason="PIL is not installed")(
         test_basic_png_aafigure_legacy
     )
-    test_html_output = pytest.mark.skip(reason="PIL is not installed")(
-        test_html_output
-    )
+    test_html_output = pytest.mark.skip(reason="PIL is not installed")(test_html_output)

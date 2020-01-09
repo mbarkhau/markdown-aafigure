@@ -17,9 +17,9 @@ except ImportError:
 
 from markdown.extensions import Extension
 from markdown.preprocessors import Preprocessor
-from markdown.postprocessors import Postprocessor
 
 import aafigure
+
 
 ArgValue = typ.Union[str, int, float, bool]
 Options  = typ.Dict[str, ArgValue]
@@ -197,18 +197,11 @@ class AafigureExtension(Extension):
             'background'    : ["", "background color default=#ffffff"],
             'rounded'       : ["", "use arcs for rounded edges instead of straight lines"],
         }
-        self.images: typ.Dict[str, str] = {}
         super(AafigureExtension, self).__init__(**kwargs)
-
-    def reset(self) -> None:
-        self.images.clear()
 
     def extendMarkdown(self, md, *args, **kwargs) -> None:
         preproc = AafigurePreprocessor(md, self)
         md.preprocessors.register(preproc, name='aafigure_fenced_code_block', priority=50)
-
-        postproc = AafigurePostprocessor(md, self)
-        md.postprocessors.register(postproc, name='aafigure_fenced_code_block', priority=0)
         md.registerExtension(self)
 
 
@@ -253,12 +246,8 @@ class AafigurePreprocessor(Preprocessor):
                 del block_lines[:]
 
                 img_tag  = draw_aafig(block_text, default_options)
-                img_id   = id(img_tag)
-                marker   = f"<p id='aafig{img_id}'>aafig{img_id}</p>"
                 tag_text = f"<p>{img_tag}</p>"
-
-                out_lines.append(marker)
-                self.ext.images[marker] = tag_text
+                out_lines.append(tag_text)
             elif self.RE.match(line):
                 is_in_fence = True
                 block_lines.append(line)
@@ -266,19 +255,3 @@ class AafigurePreprocessor(Preprocessor):
                 out_lines.append(line)
 
         return out_lines
-
-
-class AafigurePostprocessor(Postprocessor):
-    def __init__(self, md, ext: AafigureExtension) -> None:
-        super(AafigurePostprocessor, self).__init__(md)
-        self.ext: AafigureExtension = ext
-
-    def run(self, text: str) -> str:
-        for marker, img in self.ext.images.items():
-            wrapped_marker = "<p>" + marker + "</p>"
-            if wrapped_marker in text:
-                text = text.replace(wrapped_marker, img)
-            elif marker in text:
-                text = text.replace(marker, img)
-
-        return text

@@ -1,5 +1,10 @@
 # Changelog for https://gitlab.com/mbarkhau/markdown_aafigure
 
+## v202001.0007
+
+ - Fix: Bad image substitution when markdown has multiple diagrams
+
+
 ## v201907.0006
 
  - Fix: don't require typing package for py<35
@@ -25,7 +30,7 @@
  - Change: Move to gitlab.com/mbarkhau/markdown-aafigure
  - Change: Switch to pycalver
  - Change: Project packaging updates
- 
+
 
 ## 0.2.0 (2018-05-28)
 
