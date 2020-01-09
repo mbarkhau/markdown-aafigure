@@ -1,6 +1,6 @@
 # Changelog for https://gitlab.com/mbarkhau/markdown_aafigure
 
-## v202001.0007
+## v202001.0008
 
  - Fix: Bad image substitution when markdown has multiple diagrams
 
