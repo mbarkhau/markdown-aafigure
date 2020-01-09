@@ -4,7 +4,7 @@
 # Copyright (c) 2019 Manuel Barkhau (mbarkhau@gmail.com) - MIT License
 # SPDX-License-Identifier: MIT
 
-__version__ = "v201907.0006"
+__version__ = "v202001.0007"
 
 
 from markdown_aafigure.extension import AafigureExtension
