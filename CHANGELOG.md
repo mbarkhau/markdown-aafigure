@@ -1,5 +1,10 @@
 # Changelog for https://gitlab.com/mbarkhau/markdown_aafigure
 
+## v202001.0009
+
+ - Fix: Ignore trailing whitespace after closing fence.
+
+
 ## v202001.0008
 
  - Fix: Bad image substitution when markdown has multiple diagrams

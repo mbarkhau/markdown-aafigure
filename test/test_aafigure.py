@@ -238,6 +238,14 @@ def test_extended_aafigure():
     assert result == expected
 
 
+def test_trailing_whitespace():
+    fig_data = ext.draw_aafig(BASIC_BLOCK_TXT)
+
+    trailing_space_result = markdown(BASIC_BLOCK_TXT + "  ", extensions=['markdown_aafigure'])
+    assert fig_data in trailing_space_result
+    assert "```" not in trailing_space_result
+
+
 def test_html_output():
     # NOTE: This generates html that is to be tested
     #   in the browser (for warnings in devtools).
