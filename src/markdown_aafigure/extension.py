@@ -219,10 +219,10 @@ class AafigureExtension(Extension):
         md.registerExtension(self)
 
 
+BLOCK_RE = re.compile(r"^(```|~~~)aafigure")
+
+
 class AafigurePreprocessor(Preprocessor):
-
-    RE = re.compile(r"^(```|~~~)aafigure")
-
     def __init__(self, md, ext: AafigureExtension) -> None:
         super(AafigurePreprocessor, self).__init__(md)
         self.ext: AafigureExtension = ext
@@ -270,7 +270,7 @@ class AafigurePreprocessor(Preprocessor):
                 out_lines.append(marker)
                 self.ext.images[marker] = tag_text
             else:
-                fence_match = self.RE.match(line)
+                fence_match = BLOCK_RE.match(line)
                 if fence_match:
                     is_in_fence          = True
                     expected_close_fence = fence_match.group(1)
