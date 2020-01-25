@@ -146,8 +146,8 @@ HTMLTEST_TXT = HTMLTEST_TXT.replace("<figtxt>", ELECTRONICS_EXAMPLE)
 
 
 def test_regexp():
-    assert ext.AafigurePreprocessor.RE.match(BASIC_BLOCK_TXT)
-    assert ext.AafigurePreprocessor.RE.match(BASIC_BLOCK_TXT.replace("```", "~~~"))
+    assert ext.BLOCK_RE.match(BASIC_BLOCK_TXT)
+    assert ext.BLOCK_RE.match(BASIC_BLOCK_TXT.replace("```", "~~~"))
 
 
 def test_determinism_svg_legacy():
