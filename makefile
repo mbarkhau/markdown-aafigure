@@ -49,7 +49,7 @@ CONDA_ENV_PATHS := \
 # envname/bin/pypy3
 CONDA_ENV_BIN_PYTHON_PATHS := \
 	$(shell echo "$(CONDA_ENV_PATHS)" \
-	| sed 's!\(_py[[:digit:]]\+\)!\1/bin/python!g' \
+	| sed 's!\(_py[[:digit:]]\{1,\}\)!\1/bin/python!g' \
 	| sed 's!\(_pypy2[[:digit:]]\)!\1/bin/pypy!g' \
 	| sed 's!\(_pypy3[[:digit:]]\)!\1/bin/pypy3!g' \
 )
@@ -77,6 +77,8 @@ DOCKER_BASE_IMAGE := registry.gitlab.com/mbarkhau/markdown_aafigure/base
 GIT_HEAD_REV = $(shell git rev-parse --short HEAD)
 DOCKER_IMAGE_VERSION = $(shell date -u +'%Y%m%dt%H%M%S')_$(GIT_HEAD_REV)
 
+MAX_LINE_LEN = $(shell grep 'max-line-length' setup.cfg | sed 's![^0-9]\{1,\}!!')
+
 
 build/envs.txt: requirements/conda.txt
 	@mkdir -p build/;
@@ -84,13 +86,13 @@ build/envs.txt: requirements/conda.txt
 	@if [[ ! -f $(CONDA_BIN) ]]; then \
 		echo "installing miniconda ..."; \
 		if [[ $(PLATFORM) == "Linux" ]]; then \
-			curl "https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh" \
+			curl "https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh" --location \
 				> build/miniconda3.sh; \
 		elif [[ $(PLATFORM) == "MINGW64_NT-10.0" ]]; then \
-			curl "https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh" \
+			curl "https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh" --location \
 				> build/miniconda3.sh; \
 		elif [[ $(PLATFORM) == "Darwin" ]]; then \
-			curl "https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh" \
+			curl "https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh" --location \
 				> build/miniconda3.sh; \
 		fi; \
 		bash build/miniconda3.sh -b -p $(CONDA_ROOT); \
@@ -300,9 +302,29 @@ git_hooks:
 ## -- Integration --
 
 
-## Run flake8 linter
+## Run flake8 linter and check for fmt
 .PHONY: lint
 lint:
+	@printf "isort ..\n"
+	@$(DEV_ENV)/bin/isort \
+		--check-only \
+		--force-single-line-imports \
+		--length-sort \
+		--recursive \
+		--line-width=$(MAX_LINE_LEN) \
+		--project $(PKG_NAME) \
+		src/ test/
+	@printf "\e[1F\e[9C ok\n"
+
+	@printf "sjfmt ..\n"
+	@$(DEV_ENV)/bin/sjfmt \
+		--target-version=py36 \
+		--skip-string-normalization \
+		--line-length=$(MAX_LINE_LEN) \
+		--check \
+		src/ test/ 2>&1 | sed "/All done/d" | sed "/left unchanged/d"
+	@printf "\e[1F\e[9C ok\n"
+
 	@printf "flake8 ..\n"
 	@$(DEV_ENV)/bin/flake8 src/
 	@printf "\e[1F\e[9C ok\n"
@@ -316,6 +338,7 @@ mypy:
 	@printf "mypy ....\n"
 	@MYPYPATH=stubs/:vendor/ $(DEV_ENV_PY) -m mypy \
 		--html-report mypycov \
+		--no-error-summary \
 		src/ | sed "/Generated HTML report/d"
 	@printf "\e[1F\e[9C ok\n"
 
@@ -379,11 +402,19 @@ test:
 ## Run code formatter on src/ and test/
 .PHONY: fmt
 fmt:
+	@$(DEV_ENV)/bin/isort \
+		--force-single-line-imports \
+		--length-sort \
+		--recursive \
+		--line-width=$(MAX_LINE_LEN) \
+		--project $(PKG_NAME) \
+		src/ test/;
+
 	@$(DEV_ENV)/bin/sjfmt \
-		--target-version py36 \
+		--target-version=py36 \
 		--skip-string-normalization \
-		--line-length=100 \
-		src/ test/
+		--line-length=$(MAX_LINE_LEN) \
+		src/ test/;
 
 
 
@@ -453,9 +484,11 @@ devtest:
 		$(DEV_ENV_PY) -m pytest -v \
 		--doctest-modules \
 		--no-cov \
+		--durations 5 \
 		--verbose \
 		--capture=no \
 		--exitfirst \
+		--failed-first \
 		-k "$${PYTEST_FILTER}" \
 		test/ src/;
 
