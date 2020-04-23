@@ -7,20 +7,19 @@
 import re
 import json
 import base64
+import typing as typ
 import hashlib
 import warnings
-import typing as typ
+
+import aafigure
+from markdown.extensions import Extension
+from markdown.preprocessors import Preprocessor
+from markdown.postprocessors import Postprocessor
 
 try:
     from urllib.parse import quote
 except ImportError:
     from urllib import quote  # type: ignore
-
-from markdown.extensions import Extension
-from markdown.preprocessors import Preprocessor
-from markdown.postprocessors import Postprocessor
-
-import aafigure
 
 
 def make_marker_id(text: str) -> str:
