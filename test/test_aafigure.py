@@ -10,8 +10,10 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import textwrap
+
 import pytest
-from markdown import markdown
+import markdown as md
 
 import markdown_aafigure.extension as ext
 
@@ -176,7 +178,7 @@ def test_basic_svg_aafigure_legacy():
     assert img_html.startswith("<svg")
     expected = "<p>{}</p>".format(img_html)
 
-    result = markdown(BASIC_BLOCK_TXT, extensions=['markdown_aafigure'])
+    result = md.markdown(BASIC_BLOCK_TXT, extensions=['markdown_aafigure'])
     assert img_html in result
 
     # with open("debug_img_output_aafigure.svg", mode='wb') as fh:
@@ -196,7 +198,7 @@ def test_basic_png_aafigure_legacy():
     assert img_uri.startswith("data:image/png;base64,")
     expected = '<p><img src="{}"/></p>'.format(img_uri)
 
-    result = markdown(
+    result = md.markdown(
         BASIC_BLOCK_TXT,
         extensions=['markdown_aafigure'],
         extension_configs={'markdown_aafigure': {'format': 'png'}},
@@ -213,7 +215,7 @@ def test_param_aafigure():
     assert "</svg>" in fig_html
     assert 'stroke="#ff0000"' in fig_html
 
-    result = markdown(PARAM_BLOCK_TXT, extensions=['markdown_aafigure'])
+    result = md.markdown(PARAM_BLOCK_TXT, extensions=['markdown_aafigure'])
     with open("/tmp/aafig_result.html", mode="w") as fh:
         fh.write(result)
 
@@ -229,7 +231,7 @@ def test_extended_aafigure():
     assert fig_data.endswith("</svg>")
 
     extensions = DEFAULT_MKDOCS_EXTENSIONS + ['markdown_aafigure']
-    result     = markdown(EXTENDED_BLOCK_TXT, extensions=extensions)
+    result     = md.markdown(EXTENDED_BLOCK_TXT, extensions=extensions)
 
     expected = EXTENDED_FIG_HTML_TEMPLATE.format(fig_data)
     expected = expected.replace("\n", "")
@@ -241,7 +243,7 @@ def test_extended_aafigure():
 def test_trailing_whitespace():
     fig_data = ext.draw_aafig(BASIC_BLOCK_TXT)
 
-    trailing_space_result = markdown(BASIC_BLOCK_TXT + "  ", extensions=['markdown_aafigure'])
+    trailing_space_result = md.markdown(BASIC_BLOCK_TXT + "  ", extensions=['markdown_aafigure'])
     assert fig_data in trailing_space_result
     assert "```" not in trailing_space_result
 
@@ -250,7 +252,7 @@ def test_html_output():
     # NOTE: This generates html that is to be tested
     #   in the browser (for warnings in devtools).
     extensions = DEFAULT_MKDOCS_EXTENSIONS + ['markdown_aafigure']
-    result     = markdown(HTMLTEST_TXT, extensions=extensions)
+    result     = md.markdown(HTMLTEST_TXT, extensions=extensions)
     with open("/tmp/aafigure.html", mode="w") as fh:
         fh.write(result)
 
@@ -260,3 +262,44 @@ if not IS_PIL_INSTALLED:
         test_basic_png_aafigure_legacy
     )
     test_html_output = pytest.mark.skip(reason="PIL is not installed")(test_html_output)
+
+
+def test_ignore_in_non_aafigure_block():
+    md_text = textwrap.dedent(
+        r"""
+        Look at this ascii graph:
+
+        ```
+        An ascii graph
+                +-----+   ^
+                |     |   |
+            --->+     +---o--->
+                |     |   |
+                +-----+   V
+        ```
+
+        And also this code:
+
+        ```python
+        def randint() -> int:
+            return 4
+        ```
+
+        And this code:
+
+        ~~~javascript
+        function randint() {
+            return 4;
+        }
+        ~~~
+        """
+    )
+    result_a = md.markdown(md_text, extensions=DEFAULT_MKDOCS_EXTENSIONS + ['markdown_aafigure'],)
+    result_b = md.markdown(md_text, extensions=DEFAULT_MKDOCS_EXTENSIONS,)
+    assert "aafigure" not in result_a
+    assert "aafigure" not in result_b
+
+    assert result_a == result_b
+    assert "<pre><code>An ascii graph" in result_a
+    assert '<pre><code class="python">def randint' in result_a
+    assert '<pre><code class="javascript">function randint' in result_a
