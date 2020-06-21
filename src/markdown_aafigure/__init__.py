@@ -4,11 +4,20 @@
 # Copyright (c) 2019 Manuel Barkhau (mbarkhau@gmail.com) - MIT License
 # SPDX-License-Identifier: MIT
 
+
 __version__ = "v202001.0009"
 
 
 from markdown_aafigure.extension import AafigureExtension
 
 
-def makeExtension(**kwargs):
+def _make_extension(**kwargs) -> AafigureExtension:
     return AafigureExtension(**kwargs)
+
+
+# Name that conforms with the Markdown extension API
+# https://python-markdown.github.io/extensions/api/#dot_notation
+makeExtension = _make_extension
+
+
+__all__ = ['makeExtension', '__version__']

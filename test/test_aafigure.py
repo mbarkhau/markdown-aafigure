@@ -181,10 +181,10 @@ def test_basic_svg_aafigure_legacy():
     result = md.markdown(BASIC_BLOCK_TXT, extensions=['markdown_aafigure'])
     assert img_html in result
 
-    # with open("debug_img_output_aafigure.svg", mode='wb') as fh:
-    #     fh.write(fig_data)
-    # with open("debug_img_output_mardown.html", mode='wb') as fh:
-    #     fh.write(result.encode('utf-8'))
+    # with open("debug_img_output_aafigure.svg", mode='wb') as fobj:
+    #     fobj.write(fig_data)
+    # with open("debug_img_output_mardown.html", mode='wb') as fobj:
+    #     fobj.write(result.encode('utf-8'))
 
     assert result == expected
 
@@ -216,8 +216,8 @@ def test_param_aafigure():
     assert 'stroke="#ff0000"' in fig_html
 
     result = md.markdown(PARAM_BLOCK_TXT, extensions=['markdown_aafigure'])
-    with open("/tmp/aafig_result.html", mode="w") as fh:
-        fh.write(result)
+    with open("/tmp/aafig_result.html", mode="w") as fobj:
+        fobj.write(result)
 
     expected = "<p>{}</p>".format(fig_html)
 
@@ -253,8 +253,8 @@ def test_html_output():
     #   in the browser (for warnings in devtools).
     extensions = DEFAULT_MKDOCS_EXTENSIONS + ['markdown_aafigure']
     result     = md.markdown(HTMLTEST_TXT, extensions=extensions)
-    with open("/tmp/aafigure.html", mode="w") as fh:
-        fh.write(result)
+    with open("/tmp/aafigure.html", mode="w") as fobj:
+        fobj.write(result)
 
 
 if not IS_PIL_INSTALLED:

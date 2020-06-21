@@ -209,7 +209,7 @@ class AafigureExtension(Extension):
     def reset(self) -> None:
         self.images.clear()
 
-    def extendMarkdown(self, md, *args, **kwargs) -> None:
+    def extendMarkdown(self, md) -> None:
         preproc = AafigurePreprocessor(md, self)
         md.preprocessors.register(preproc, name='aafigure_fenced_code_block', priority=50)
 
@@ -226,21 +226,16 @@ class AafigurePreprocessor(Preprocessor):
         super(AafigurePreprocessor, self).__init__(md)
         self.ext: AafigureExtension = ext
 
-    def run(self, lines: typ.List[str]) -> typ.List[str]:
-        is_in_fence          = False
-        expected_close_fence = "```"
-
-        out_lines  : typ.List[str] = []
-        block_lines: typ.List[str] = []
-
-        default_options: Options = {}
+    @property
+    def default_options(self) -> Options:
+        options: Options = {}
 
         for name in self.ext.config.keys():
             val = self.ext.getConfig(name, "")
             if val != "":
-                default_options[name] = val
+                options[name] = val
 
-        output_fmt   : typ.Any = default_options.get('format')
+        output_fmt   : typ.Any = options.get('format')
         if output_fmt:
             if output_fmt == 'png':
                 override_tag_type = 'img_base64_png'
@@ -248,7 +243,24 @@ class AafigurePreprocessor(Preprocessor):
                 override_tag_type = 'inline_svg'
             else:
                 override_tag_type = 'inline_svg'
-            default_options['tag_type'] = override_tag_type
+            options['tag_type'] = override_tag_type
+
+        return options
+
+    def _make_tag_for_block(self, block_lines: typ.List[str]) -> str:
+        block_text = "\n".join(block_lines).rstrip()
+        img_tag    = draw_aafig(block_text, self.default_options)
+        img_id     = make_marker_id(img_tag)
+        marker_tag = f"<p id='aafig{img_id}'>aafig{img_id}</p>"
+        tag_text   = f"<p>{img_tag}</p>"
+        self.ext.images[marker_tag] = tag_text
+        return marker_tag
+
+    def _iter_out_lines(self, lines: typ.List[str]) -> typ.Iterable[str]:
+        is_in_fence          = False
+        expected_close_fence = "```"
+
+        block_lines: typ.List[str] = []
 
         for line in lines:
             if is_in_fence:
@@ -258,16 +270,9 @@ class AafigurePreprocessor(Preprocessor):
                     continue
 
                 is_in_fence = False
-                block_text  = "\n".join(block_lines).rstrip()
+                marker_tag  = self._make_tag_for_block(block_lines)
                 del block_lines[:]
-
-                img_tag  = draw_aafig(block_text, default_options)
-                img_id   = make_marker_id(img_tag)
-                marker   = f"<p id='aafig{img_id}'>aafig{img_id}</p>"
-                tag_text = f"<p>{img_tag}</p>"
-
-                out_lines.append(marker)
-                self.ext.images[marker] = tag_text
+                yield marker_tag
             else:
                 fence_match = BLOCK_RE.match(line)
                 if fence_match:
@@ -275,15 +280,16 @@ class AafigurePreprocessor(Preprocessor):
                     expected_close_fence = fence_match.group(1)
                     block_lines.append(line)
                 else:
-                    out_lines.append(line)
+                    yield line
 
-        return out_lines
+    def run(self, lines: typ.List[str]) -> typ.List[str]:
+        return list(self._iter_out_lines(lines))
 
 
 # NOTE (mb):
 #   Q: Why this business with the Postprocessor? Why
-#   not just do `out_lines.append(tag_text)` and save
-#   the hassle of `self.ext.images[marker] = tag_text` ?
+#   not just do `yield tag_text` and save the hassle
+#   of `self.ext.math_html[marker_tag] = tag_text` ?
 #   A: Maybe there are other processors that can't be
 #   trusted to leave the inserted markup alone. Maybe
 #   the inserted markup could be incorrectly parsed as
@@ -296,11 +302,11 @@ class AafigurePostprocessor(Postprocessor):
         self.ext: AafigureExtension = ext
 
     def run(self, text: str) -> str:
-        for marker, img in self.ext.images.items():
-            wrapped_marker = "<p>" + marker + "</p>"
+        for marker_tag, img in self.ext.images.items():
+            wrapped_marker = "<p>" + marker_tag + "</p>"
             if wrapped_marker in text:
                 text = text.replace(wrapped_marker, img)
-            elif marker in text:
-                text = text.replace(marker, img)
+            elif marker_tag in text:
+                text = text.replace(marker_tag, img)
 
         return text
