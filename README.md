@@ -1,3 +1,10 @@
+<div align="center">
+<p align="center">
+  <img alt="logo" src="https://gitlab.com/mbarkhau/markdown_aafigure/-/raw/master/logo.png">
+</p>
+</div>
+
+
 # [Markdown aafigure][repo_ref]
 
 This is an extension for [Python Markdown](https://python-markdown.github.io/)
