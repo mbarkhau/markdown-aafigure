@@ -18,6 +18,7 @@ import markdown as md
 import markdown_aafigure.extension as ext
 
 try:
+    # pylint:disable=unused-import
     import PIL  # noqa
 
     IS_PIL_INSTALLED = True
@@ -192,7 +193,10 @@ def test_basic_svg_aafigure_legacy():
 def test_basic_png_aafigure_legacy():
     fig_data = ext.draw_aafigure(BASIC_BLOCK_TXT, output_fmt='png')
 
+    assert b"<svg" not in fig_data
+
     img_html = ext.draw_aafig(BASIC_BLOCK_TXT, {'tag_type': 'img_base64_png'})
+    assert "<svg" not in img_html
 
     img_uri = ext.fig2png_uri(BASIC_BLOCK_TXT)
     assert img_uri.startswith("data:image/png;base64,")

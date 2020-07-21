@@ -126,7 +126,7 @@ def _parse_block_text(
 def draw_aafig(block_text: str, default_options: Options = None) -> str:
     block_text, tag_type, options = _parse_block_text(block_text, default_options)
 
-    visitor, output = aafigure.render(block_text, options=options)
+    _, output = aafigure.render(block_text, options=options)
     img_data = output.getvalue()
     return img2html(img_data, tag_type)
 
@@ -135,6 +135,7 @@ def draw_aafig(block_text: str, default_options: Options = None) -> str:
 
 
 def draw_aafigure(block_text: str, filename: typ.Any = None, output_fmt: str = 'svg') -> bytes:
+    # pylint:disable=unused-argument
     warnings.warn("draw_aafigure is depricated use 'draw_aafig' instead", DeprecationWarning)
     if output_fmt == 'png':
         tag_type = 'img_base64_png'
@@ -148,8 +149,15 @@ def draw_aafigure(block_text: str, filename: typ.Any = None, output_fmt: str = '
     default_options: Options = {'tag_type': tag_type}
     block_text, tag_type, options = _parse_block_text(block_text, default_options)
 
-    visitor, output = aafigure.render(block_text, options=options)
-    return output.getvalue()
+    _, output = aafigure.render(block_text, options=options)
+    result = output.getvalue()
+    if isinstance(result, str):
+        return result.encode("utf-8")
+    if isinstance(result, bytes):
+        return result
+
+    errmsg = f"Unexpected return type from aafigure.render: {type(result)}"
+    raise TypeError(errmsg)
 
 
 def fig2img_uri(block_text: str, output_fmt: str = 'svg', encoding: str = 'base64') -> str:
