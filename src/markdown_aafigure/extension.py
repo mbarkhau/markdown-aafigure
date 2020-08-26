@@ -212,7 +212,7 @@ class AafigureExtension(Extension):
             'rounded'       : ["", "use arcs for rounded edges instead of straight lines"],
         }
         self.images: typ.Dict[str, str] = {}
-        super(AafigureExtension, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def reset(self) -> None:
         self.images.clear()
@@ -231,7 +231,7 @@ BLOCK_RE = re.compile(r"^(```|~~~)aafigure")
 
 class AafigurePreprocessor(Preprocessor):
     def __init__(self, md, ext: AafigureExtension) -> None:
-        super(AafigurePreprocessor, self).__init__(md)
+        super().__init__(md)
         self.ext: AafigureExtension = ext
 
     @property
@@ -306,7 +306,7 @@ class AafigurePreprocessor(Preprocessor):
 
 class AafigurePostprocessor(Postprocessor):
     def __init__(self, md, ext: AafigureExtension) -> None:
-        super(AafigurePostprocessor, self).__init__(md)
+        super().__init__(md)
         self.ext: AafigureExtension = ext
 
     def run(self, text: str) -> str:
