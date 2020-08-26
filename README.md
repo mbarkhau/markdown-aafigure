@@ -92,8 +92,8 @@ Valid options for `tag_type` are `inline_svg` (the default), `img_utf8_svg`, `im
 
 [repo_ref]: https://gitlab.com/mbarkhau/markdown_aafigure
 
-[github_build_img]: https://github.com/mbarkhau/markdown_aafigure/workflows/CI/badge.svg
-[github_build_ref]: https://github.com/mbarkhau/markdown_aafigure/actions?query=workflow%3ACI
+[github_build_img]: https://github.com/mbarkhau/markdown-aafigure/workflows/CI/badge.svg
+[github_build_ref]: https://github.com/mbarkhau/markdown-aafigure/actions?query=workflow%3ACI
 
 [gitlab_build_img]: https://gitlab.com/mbarkhau/markdown_aafigure/badges/master/pipeline.svg
 [gitlab_build_ref]: https://gitlab.com/mbarkhau/markdown_aafigure/pipelines
