@@ -20,7 +20,8 @@ Project/Repo:
 
 Code Quality/CI:
 
-[![Build Status][build_img]][build_ref]
+[![GitHub CI Status][github_build_img]][github_build_ref]
+[![GitLab CI Status][gitlab_build_img]][gitlab_build_ref]
 [![Type Checked with mypy][mypy_img]][mypy_ref]
 [![Code Coverage][codecov_img]][codecov_ref]
 [![Code Style: sjfmt][style_img]][style_ref]
@@ -91,8 +92,11 @@ Valid options for `tag_type` are `inline_svg` (the default), `img_utf8_svg`, `im
 
 [repo_ref]: https://gitlab.com/mbarkhau/markdown_aafigure
 
-[build_img]: https://gitlab.com/mbarkhau/markdown_aafigure/badges/master/pipeline.svg
-[build_ref]: https://gitlab.com/mbarkhau/markdown_aafigure/pipelines
+[github_build_img]: https://github.com/mbarkhau/markdown_aafigure/workflows/CI/badge.svg
+[github_build_ref]: https://github.com/mbarkhau/markdown_aafigure/actions?query=workflow%3ACI
+
+[gitlab_build_img]: https://gitlab.com/mbarkhau/markdown_aafigure/badges/master/pipeline.svg
+[gitlab_build_ref]: https://gitlab.com/mbarkhau/markdown_aafigure/pipelines
 
 [codecov_img]: https://gitlab.com/mbarkhau/markdown_aafigure/badges/master/coverage.svg
 [codecov_ref]: https://mbarkhau.gitlab.io/markdown_aafigure/cov
