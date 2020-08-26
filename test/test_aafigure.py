@@ -298,8 +298,14 @@ def test_ignore_in_non_aafigure_block():
         ~~~
         """
     )
-    result_a = md.markdown(md_text, extensions=DEFAULT_MKDOCS_EXTENSIONS + ['markdown_aafigure'],)
-    result_b = md.markdown(md_text, extensions=DEFAULT_MKDOCS_EXTENSIONS,)
+    result_a = md.markdown(
+        md_text,
+        extensions=DEFAULT_MKDOCS_EXTENSIONS + ['markdown_aafigure'],
+    )
+    result_b = md.markdown(
+        md_text,
+        extensions=DEFAULT_MKDOCS_EXTENSIONS,
+    )
     assert "aafigure" not in result_a
     assert "aafigure" not in result_b
 
