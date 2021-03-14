@@ -1,7 +1,7 @@
 # This file is part of the markdown_aafigure project
 # https://gitlab.com/mbarkhau/markdown_aafigure
 #
-# Copyright (c) 2019 Manuel Barkhau (mbarkhau@gmail.com) - MIT License
+# Copyright (c) 2019-2020 Manuel Barkhau (mbarkhau@gmail.com) - MIT License
 # SPDX-License-Identifier: MIT
 
 import os
@@ -21,19 +21,17 @@ def read(*sub_paths):
 
 package_dir = {"": "src"}
 
-
 if any(arg.startswith("bdist") for arg in sys.argv):
-    try:
-        import lib3to6
-        package_dir = lib3to6.fix(package_dir)
-    except ImportError:
-        if sys.version_info < (3, 6):
-            raise
-        else:
-            sys.stderr.write((
-                "WARNING: Creating non-universal bdist of pycalver, "
-                "this should only be used for development.\n"
-            ))
+    import lib3to6
+    package_dir = lib3to6.fix(package_dir)
+
+
+install_requires = [
+    line.strip()
+    for line in read("requirements", "pypi.txt").splitlines()
+    if line.strip() and not line.startswith("#")
+]
+
 
 long_description = "\n\n".join((read("README.md"), read("CHANGELOG.md")))
 
@@ -51,11 +49,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     packages=["markdown_aafigure"],
     package_dir=package_dir,
-    install_requires=[
-        "Markdown",
-        "aafigure",
-        "typing",
-    ],
+    install_requires=install_requires,
     zip_safe=True,
     entry_points={
         'markdown.extensions': [
@@ -76,9 +70,7 @@ setuptools.setup(
         "Operating System :: Microsoft :: Windows",
         "Programming Language :: Python",
         "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
         "Topic :: Software Development :: Libraries",

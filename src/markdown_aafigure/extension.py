@@ -1,14 +1,16 @@
 # This file is part of the markdown-aafigure project.
 # https://gitlab.com/mbarkhau/markdown_aafigure
 #
-# Copyright (c) 2019 Manuel Barkhau (mbarkhau@gmail.com) - MIT License
+# Copyright (c) 2018-2020 Manuel Barkhau (mbarkhau@gmail.com) - MIT License
 # SPDX-License-Identifier: MIT
 
 import re
+import copy
 import json
 import base64
 import typing as typ
 import hashlib
+import logging
 import warnings
 
 import aafigure
@@ -20,6 +22,9 @@ try:
     from urllib.parse import quote
 except ImportError:
     from urllib import quote  # type: ignore
+
+
+logger = logging.getLogger(__name__)
 
 
 def make_marker_id(text: str) -> str:
@@ -184,33 +189,36 @@ def fig2png_uri(block_text: str) -> str:
     return fig2img_uri(block_text, output_fmt='png')
 
 
+DEFAULT_CONFIG = {
+    # prior to v201904.0005 the config paramter
+    #   was format, but the prefered parameter
+    #   going forward is tag_type.
+    'format'  : ['svg', "Legacy parameter for output format"],
+    'tag_type': [
+        'inline_svg',
+        "Format to use (inline_svg|img_utf8_svg|img_base64_svg|img_base64_png)",
+    ],
+    # NOTE: This is taken from the output of
+    #   aafigure --help which unfortunately is
+    #   not easilly programatically available.
+    'widechars'     : ["", "unicode properties to be treated as wide glyph (e.g. 'F,W,A')"],
+    'debug'         : ["", "enable debug outputs"],
+    'textual'       : ["", "disable horizontal fill detection"],
+    'textual_strict': ["", "disable horizontal and vertical fill detection"],
+    'scale'         : ["", "set scale"],
+    'aspect'        : ["", "set aspect ratio"],
+    'line_width'    : ["", "set width, svg only"],
+    'proportional'  : ["", "use proportional font instead of fixed width"],
+    'foreground'    : ["", "foreground color default=#000000"],
+    'fill'          : ["", "foreground color default=foreground"],
+    'background'    : ["", "background color default=#ffffff"],
+    'rounded'       : ["", "use arcs for rounded edges instead of straight lines"],
+}
+
+
 class AafigureExtension(Extension):
     def __init__(self, **kwargs) -> None:
-        self.config: typ.Dict[str, typ.List[typ.Any]] = {
-            # prior to v201904.0005 the config paramter
-            #   was format, but the prefered parameter
-            #   going forward is tag_type.
-            'format'  : ['svg', "Legacy parameter for output format"],
-            'tag_type': [
-                'inline_svg',
-                "Format to use (inline_svg|img_utf8_svg|img_base64_svg|img_base64_png)",
-            ],
-            # NOTE: This is taken from the output of
-            #   aafigure --help which unfortunately is
-            #   not easilly programatically available.
-            'widechars'     : ["", "unicode properties to be treated as wide glyph (e.g. 'F,W,A')"],
-            'debug'         : ["", "enable debug outputs"],
-            'textual'       : ["", "disable horizontal fill detection"],
-            'textual_strict': ["", "disable horizontal and vertical fill detection"],
-            'scale'         : ["", "set scale"],
-            'aspect'        : ["", "set aspect ratio"],
-            'line_width'    : ["", "set width, svg only"],
-            'proportional'  : ["", "use proportional font instead of fixed width"],
-            'foreground'    : ["", "foreground color default=#000000"],
-            'fill'          : ["", "foreground color default=foreground"],
-            'background'    : ["", "background color default=#ffffff"],
-            'rounded'       : ["", "use arcs for rounded edges instead of straight lines"],
-        }
+        self.config = copy.deepcopy(DEFAULT_CONFIG)
         self.images: typ.Dict[str, str] = {}
         super().__init__(**kwargs)
 
@@ -259,7 +267,7 @@ class AafigurePreprocessor(Preprocessor):
         block_text = "\n".join(block_lines).rstrip()
         img_tag    = draw_aafig(block_text, self.default_options)
         img_id     = make_marker_id(img_tag)
-        marker_tag = f"<p id='aafig{img_id}'>aafig{img_id}</p>"
+        marker_tag = f"<p id=\"tmp_md_aafig{img_id}\">aafig{img_id}</p>"
         tag_text   = f"<p>{img_tag}</p>"
         self.ext.images[marker_tag] = tag_text
         return marker_tag
@@ -311,10 +319,14 @@ class AafigurePostprocessor(Postprocessor):
 
     def run(self, text: str) -> str:
         for marker_tag, img in self.ext.images.items():
-            wrapped_marker = "<p>" + marker_tag + "</p>"
-            if wrapped_marker in text:
-                text = text.replace(wrapped_marker, img)
-            elif marker_tag in text:
-                text = text.replace(marker_tag, img)
+            if marker_tag in text:
+                wrapped_marker = "<p>" + marker_tag + "</p>"
+                while marker_tag in text:
+                    if wrapped_marker in text:
+                        text = text.replace(wrapped_marker, img)
+                    else:
+                        text = text.replace(marker_tag, img)
+            else:
+                logger.warning(f"AafigurePostprocessor couldn't find: {marker_tag}")
 
         return text

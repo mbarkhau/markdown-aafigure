@@ -1,5 +1,12 @@
 # Changelog for https://gitlab.com/mbarkhau/markdown_aafigure
 
+## v202103.1010
+
+ - Fix related to [#14](https://gitlab.com/mbarkhau/markdown-katex/-/issues/14): Since `Markdown>=3.3` support for [Markdown in HTML][md_in_html] was broken.
+
+[md_in_html]: https://python-markdown.github.io/extensions/md_in_html/
+
+
 ## v202001.0009
 
  - Fix: Ignore trailing whitespace after closing fence.

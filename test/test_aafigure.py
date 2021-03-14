@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of markdown-aafigure.
 # https://github.com/mbarkhau/markdown-aafigure
-# (C) 2018 Manuel Barkhau <mbarkhau@gmail.com>
+# (C) 2018-2020 Manuel Barkhau <mbarkhau@gmail.com>
 #
 # SPDX-License-Identifier:    MIT
 
@@ -10,6 +10,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import re
 import textwrap
 
 import pytest
@@ -311,5 +312,5 @@ def test_ignore_in_non_aafigure_block():
 
     assert result_a == result_b
     assert "<pre><code>An ascii graph" in result_a
-    assert '<pre><code class="python">def randint' in result_a
-    assert '<pre><code class="javascript">function randint' in result_a
+    assert re.search(r'<pre><code class="(language-)?python">def randint', result_a)
+    assert re.search(r'<pre><code class="(language-)?javascript">function randint', result_a)
