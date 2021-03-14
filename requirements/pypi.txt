@@ -11,4 +11,3 @@ Markdown>=3.0<3.3;python_version<"3.6"
 Markdown>=3.0;python_version>="3.6"
 aafigure
 typing;python_version<"3.5"
-Pillow
