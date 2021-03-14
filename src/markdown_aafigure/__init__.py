@@ -1,11 +1,11 @@
 # This file is part of the markdown_aafigure project
 # https://gitlab.com/mbarkhau/markdown_aafigure
 #
-# Copyright (c) 2018-2020 Manuel Barkhau (mbarkhau@gmail.com) - MIT License
+# Copyright (c) 2018-2021 Manuel Barkhau (mbarkhau@gmail.com) - MIT License
 # SPDX-License-Identifier: MIT
 
 
-__version__ = "v202001.0009"
+__version__ = "v202103.1010"
 
 
 from markdown_aafigure.extension import AafigureExtension
