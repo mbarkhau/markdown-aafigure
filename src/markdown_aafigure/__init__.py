@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: MIT
 
 
-__version__ = "v202103.1010"
+__version__ = "v202104.1011"
 
 
 from markdown_aafigure.extension import AafigureExtension
