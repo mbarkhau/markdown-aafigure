@@ -150,8 +150,16 @@ HTMLTEST_TXT = HTMLTEST_TXT.replace("<figtxt>", ELECTRONICS_EXAMPLE)
 
 
 def test_regexp():
-    assert ext.BLOCK_RE.match(BASIC_BLOCK_TXT)
-    assert ext.BLOCK_RE.match(BASIC_BLOCK_TXT.replace("```", "~~~"))
+    block_texts = [
+        BASIC_BLOCK_TXT,
+        BASIC_BLOCK_TXT.replace("```", "~~~"),
+        BASIC_BLOCK_TXT.replace("```", "~~~~"),
+        BASIC_BLOCK_TXT.replace("```", "````"),
+    ]
+
+    for block_text in block_texts:
+        assert ext.BLOCK_START_RE.match(block_text)
+        assert ext.BLOCK_CLEAN_RE.match(block_text)
 
 
 def test_determinism_svg_legacy():

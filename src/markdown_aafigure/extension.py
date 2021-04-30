@@ -27,6 +27,18 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
+BLOCK_START_RE = re.compile(r"^(`{3,}|~{3,})aafigure")
+BLOCK_CLEAN_RE = re.compile(r"^(`{3,}|~{3,})aafigure(.*)(\1)$", flags=re.DOTALL)
+
+
+def _clean_block_text(block_text: str) -> str:
+    block_match = BLOCK_CLEAN_RE.match(block_text)
+    if block_match:
+        return block_match.group(2)
+    else:
+        return block_text
+
+
 def make_marker_id(text: str) -> str:
     data = text.encode("utf-8")
     return hashlib.md5(data).hexdigest()
@@ -73,19 +85,6 @@ def img2html(img_data: bytes, tag_type: TagType = 'inline_svg') -> str:
     else:
         err_msg = f"Invalid tag_type='{tag_type}'"
         raise NotImplementedError(err_msg)
-
-
-def _clean_block_text(block_text: str) -> str:
-    if block_text.startswith("```aafigure"):
-        block_text = block_text[len("```aafigure") :]
-    elif block_text.startswith("~~~aafigure"):
-        block_text = block_text[len("~~~aafigure") :]
-
-    if block_text.endswith("```"):
-        block_text = block_text[: -len("```")]
-    elif block_text.endswith("~~~"):
-        block_text = block_text[: -len("~~~")]
-    return block_text
 
 
 def _parse_block_text(
@@ -234,9 +233,6 @@ class AafigureExtension(Extension):
         md.registerExtension(self)
 
 
-BLOCK_RE = re.compile(r"^(```|~~~)aafigure")
-
-
 class AafigurePreprocessor(Preprocessor):
     def __init__(self, md, ext: AafigureExtension) -> None:
         super().__init__(md)
@@ -290,7 +286,7 @@ class AafigurePreprocessor(Preprocessor):
                 del block_lines[:]
                 yield marker_tag
             else:
-                fence_match = BLOCK_RE.match(line)
+                fence_match = BLOCK_START_RE.match(line)
                 if fence_match:
                     is_in_fence          = True
                     expected_close_fence = fence_match.group(1)
