@@ -44,8 +44,9 @@ def make_marker_id(text: str) -> str:
     return hashlib.md5(data).hexdigest()
 
 
-ArgValue = typ.Union[str, int, float, bool]
-Options  = typ.Dict[str, ArgValue]
+ArgValue     = typ.Union[str, int, float, bool]
+Options      = typ.Dict[str, ArgValue]
+MaybeOptions = typ.Optional[Options]
 
 # inline_svg|img_utf8_svg|img_base64_svg|img_base64_png
 TagType = str
@@ -88,7 +89,7 @@ def img2html(img_data: bytes, tag_type: TagType = 'inline_svg') -> str:
 
 
 def _parse_block_text(
-    block_text: str, default_options: Options = None
+    block_text: str, default_options: MaybeOptions = None
 ) -> typ.Tuple[str, TagType, Options]:
     block_text = _clean_block_text(block_text)
     header, rest = block_text.split("\n", 1)
@@ -127,7 +128,7 @@ def _parse_block_text(
     return (block_text, tag_type, options)
 
 
-def draw_aafig(block_text: str, default_options: Options = None) -> str:
+def draw_aafig(block_text: str, default_options: MaybeOptions = None) -> str:
     block_text, tag_type, options = _parse_block_text(block_text, default_options)
 
     _, output = aafigure.render(block_text, options=options)
