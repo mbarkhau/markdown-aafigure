@@ -229,7 +229,7 @@ def test_param_aafigure():
     assert 'stroke="#ff0000"' in fig_html
 
     result = md.markdown(PARAM_BLOCK_TXT, extensions=['markdown_aafigure'])
-    with open("/tmp/aafig_result.html", mode="w") as fobj:
+    with open("/tmp/aafig_result.html", mode="w", encoding="utf-8") as fobj:
         fobj.write(result)
 
     expected = "<p>{}</p>".format(fig_html)
@@ -266,7 +266,7 @@ def test_html_output():
     #   in the browser (for warnings in devtools).
     extensions = DEFAULT_MKDOCS_EXTENSIONS + ['markdown_aafigure']
     result     = md.markdown(HTMLTEST_TXT, extensions=extensions)
-    with open("/tmp/aafigure.html", mode="w") as fobj:
+    with open("/tmp/aafigure.html", mode="w", encoding="utf-8") as fobj:
         fobj.write(result)
 
 

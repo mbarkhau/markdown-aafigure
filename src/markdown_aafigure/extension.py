@@ -140,7 +140,11 @@ def draw_aafig(block_text: str, default_options: Options = None) -> str:
 
 def draw_aafigure(block_text: str, filename: typ.Any = None, output_fmt: str = 'svg') -> bytes:
     # pylint:disable=unused-argument
-    warnings.warn("draw_aafigure is depricated use 'draw_aafig' instead", DeprecationWarning)
+    warnings.warn(
+        "draw_aafigure is depricated use 'draw_aafig' instead",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     if output_fmt == 'png':
         tag_type = 'img_base64_png'
     elif output_fmt == 'svg':
@@ -165,7 +169,11 @@ def draw_aafigure(block_text: str, filename: typ.Any = None, output_fmt: str = '
 
 
 def fig2img_uri(block_text: str, output_fmt: str = 'svg', encoding: str = 'base64') -> str:
-    warnings.warn("fig2img_uri is depricated use 'draw_aafig' instead", DeprecationWarning)
+    warnings.warn(
+        "fig2img_uri is depricated use 'draw_aafig' instead",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     if output_fmt == 'png':
         tag_type = 'img_base64_png'
     elif output_fmt == 'svg' and encoding == 'utf-8':
