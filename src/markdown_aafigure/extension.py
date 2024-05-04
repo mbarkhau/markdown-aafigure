@@ -1,7 +1,7 @@
 # This file is part of the markdown-aafigure project.
 # https://gitlab.com/mbarkhau/markdown_aafigure
 #
-# Copyright (c) 2018-2021 Manuel Barkhau (mbarkhau@gmail.com) - MIT License
+# Copyright (c) 2018-2024 Manuel Barkhau (mbarkhau@gmail.com) - MIT License
 # SPDX-License-Identifier: MIT
 
 import re
